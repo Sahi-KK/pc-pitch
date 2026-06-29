@@ -1,0 +1,2511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Placement Committee | IIM Rohtak</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkest: '#ffffff',   /* Flipped to White */
+                        darksea: '#4a0404',   /* Dark Maroon */
+                        sea: '#7f1d1d',       /* Maroon */
+                        vibrant: '#991b1b',   /* Bright Maroon */
+                        light: '#f4f9f9',     /* Off-white */
+                        purewhite: '#111827', /* Flipped to dark gray for text readability */
+                        textdark: '#f3f4f6',  /* Flipped to light gray */
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        heading: ['Outfit', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;900&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/TextPlugin.min.js"></script>
+    
+    <style>
+        body {
+            background-color: #ffffff;
+            color: #111827;
+            overflow: hidden; /* Lock scroll strictly */
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1, h2, h3, h4, h5, .font-heading {
+            font-family: 'Syncopate', sans-serif;
+        }
+
+        /* Slide Management */
+        .slide {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100vw;
+            height: 100vh;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .slide.active-slide {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            z-index: 10;
+        }
+
+        /* Navigation Hint */
+        .nav-hint {
+            position: fixed;
+            bottom: 2rem;
+            right: 3rem;
+            z-index: 100;
+            color: #111827;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            opacity: 0.8;
+            mix-blend-mode: normal;
+        }
+        .key-btn {
+            border: 1px solid rgba(0,0,0,0.4);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        /* Section 1: Hero Mesh & Image BG */
+        .hero-bg {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/b/b9/Indian_Institute_of_Management_Rohtak%2C_Academic_Block.jpg');
+            background-size: cover;
+            background-position: center;
+            z-index: 0;
+            animation: kenBurns 25s infinite alternate ease-in-out;
+        }
+        .hero-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(2, 21, 19, 0.8) 0%, rgba(15, 118, 110, 0.4) 100%);
+            z-index: 1;
+        }
+        
+        @keyframes float3D {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(1.5deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+        .float-3d {
+            animation: float3D 8s ease-in-out infinite;
+            will-change: transform;
+        }
+
+        @keyframes kenBurns {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.15); }
+        }
+
+        .kinetic-line {
+            display: block;
+            opacity: 0;
+            transform: scale(1.2) translateY(50px);
+            transform-origin: center left;
+        }
+
+        /* Section 2: Stats */
+        .glow-neon {
+            text-shadow: 0 0 30px rgba(153, 27, 27, 0.4);
+        }
+        .vertical-line-container {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 0;
+            height: 100%;
+            width: 2px;
+            background: rgba(0, 0, 0, 0.1);
+            z-index: 0;
+        }
+        .vertical-line-glow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 0%;
+            background: linear-gradient(to bottom, transparent, #991b1b, transparent);
+            box-shadow: 0 0 20px #991b1b;
+        }
+
+        /* Section 3: Crisp Cards */
+        .crisp-card {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.1);
+            transform-style: preserve-3d;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+        }
+        .crisp-card:hover {
+            border-color: #0f766e;
+            box-shadow: 0 40px 80px -20px rgba(15, 118, 110, 0.25);
+            transform: translateY(-10px) !important;
+        }
+
+        /* Section 4: Pitch */
+        .pitch-item {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        /* Section 5: Culture */
+        .marquee-wrapper {
+            white-space: nowrap;
+            overflow: hidden;
+            display: flex;
+        }
+        .marquee-content {
+            display: flex;
+            flex-shrink: 0;
+        }
+        .text-outline {
+            color: transparent;
+            -webkit-text-stroke: 2px #0b131a;
+        }
+        
+        .polaroid-container {
+            perspective: 1200px;
+        }
+        .polaroid {
+            background: #fff;
+            padding: 15px 15px 50px 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform-style: preserve-3d;
+            cursor: pointer;
+            width: 260px;
+            height: 320px;
+            position: absolute;
+            border: 1px solid #eaeaea;
+            opacity: 0;
+        }
+        .polaroid .inner {
+            background: #021513;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        .polaroid .color-fill {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 1.5rem;
+            font-weight: 800;
+            color: #fff;
+            line-height: 1.2;
+        }
+        .polaroid:hover {
+            transform: scale(1.15) rotate(0deg) translateZ(50px) !important;
+            z-index: 50 !important;
+            box-shadow: 0 40px 60px rgba(0, 232, 164, 0.3);
+        }
+        .polaroid:hover .color-fill {
+            opacity: 1;
+        }
+
+        @keyframes letterShimmer {
+            0%, 100% { filter: brightness(1); text-shadow: none; }
+            10% { filter: brightness(2); text-shadow: 0 0 15px rgba(255, 150, 150, 0.5); }
+            20% { filter: brightness(1); text-shadow: none; }
+        }
+        .placements-shine .word-letter {
+            animation: letterShimmer 3.5s infinite linear;
+        }
+        .placements-shine .word-letter:nth-child(1) { animation-delay: 0.00s; }
+        .placements-shine .word-letter:nth-child(2) { animation-delay: 0.10s; }
+        .placements-shine .word-letter:nth-child(3) { animation-delay: 0.20s; }
+        .placements-shine .word-letter:nth-child(4) { animation-delay: 0.30s; }
+        .placements-shine .word-letter:nth-child(5) { animation-delay: 0.40s; }
+        .placements-shine .word-letter:nth-child(6) { animation-delay: 0.50s; }
+        .placements-shine .word-letter:nth-child(7) { animation-delay: 0.60s; }
+        .placements-shine .word-letter:nth-child(8) { animation-delay: 0.70s; }
+        .placements-shine .word-letter:nth-child(9) { animation-delay: 0.80s; }
+        .placements-shine .word-letter:nth-child(10){ animation-delay: 0.90s; }
+    </style>
+</head>
+<body>
+
+
+    <!-- Persistent Global Logo Layer -->
+    
+    <div id="persistent-logo-layer" class="fixed inset-0 pointer-events-none z-[100] flex flex-col items-center justify-center w-full px-4">
+        <div id="entry-logo-container" class="relative">
+            <img id="entry-logo" src="Logo Background Removed.png" alt="Placement Committee Logo" class="w-48 h-48 md:w-56 md:h-56 object-contain mix-blend-multiply opacity-100 mb-6" />
+        </div>
+        <!-- Dummy spacer for exact vertical alignment mirroring Slide 0 text -->
+        <h1 class="font-heading text-3xl md:text-4xl lg:text-5xl opacity-0 invisible font-bold tracking-[0.25em] uppercase text-center whitespace-nowrap">
+            Placement Committee
+        </h1>
+    </div>
+    </div>
+
+    <!-- ===== CRAZY MORPH TRANSITION OVERLAY (Slide 1 → 2) ===== -->
+    <div id="crazy-morph-container" style="position:fixed;inset:0;z-index:150;pointer-events:none;display:none;overflow:hidden;">
+        <!-- Canvas or SVG elements for the morph will be generated here dynamically -->
+    </div>
+
+    <!-- ===== DEBUG PANEL ===== -->
+    
+    <main id="main-container" class="relative w-full h-full">
+        <!-- Slide 0: The Landing / Welcome -->
+        <section class="slide active-slide bg-white" id="slide-0">
+            <div class="flex flex-col items-center justify-center h-full px-4">
+                
+                <!-- Dummy logo spacer for exact vertical alignment mirroring persistent layer -->
+                <div class="w-48 h-48 md:w-56 md:h-56 mb-6 opacity-0 invisible"></div>
+                
+                <!-- Clean, Bold Text -->
+                <h1 id="entry-text" class="font-heading text-3xl md:text-4xl lg:text-5xl text-gray-900 font-bold tracking-[0.25em] uppercase text-center whitespace-nowrap relative">
+                    Placement Committee
+                </h1>
+                
+                <!-- Floating Hint -->
+                <div id="entry-hint" class="absolute bottom-10 left-0 w-full text-center text-gray-400 font-sans text-xs uppercase tracking-widest animate-pulse">
+                    Press Right Arrow
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 1: Welcome to IIM Rohtak -->
+        <section class="slide bg-darkest" id="slide-1">
+            <!-- Background Image with more subtle breathing animation -->
+            <div class="hero-bg" style="background-image: url('light_maroon_sketch.png'); opacity: 0.35; animation: kenBurns 40s infinite alternate ease-in-out;"></div>
+            
+            <!-- Stronger overlay in the center for text readability -->
+            <div class="hero-overlay" style="background: radial-gradient(circle at center, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.4) 60%, rgba(243,244,246,0.2) 100%);"></div>
+            
+            <div class="z-10 flex flex-col items-center justify-center h-full text-center relative w-full px-6">
+                <div class="overflow-hidden mb-6">
+                    <!-- Made Welcome to bolder and added shadow for readability -->
+                    <h1 class="elegant-text font-heading text-4xl md:text-5xl lg:text-6xl tracking-[0.3em] font-semibold text-purewhite uppercase drop-shadow-md">Welcome to</h1>
+                </div>
+                <div class="overflow-hidden">
+                    <h2 class="elegant-text font-heading text-7xl md:text-9xl lg:text-[10rem] tracking-[0.1em] uppercase font-black text-vibrant glow-neon drop-shadow-xl">IIM Rohtak</h2>
+                </div>
+                <div class="mt-12 overflow-hidden flex justify-center w-full">
+                    <div class="elegant-line w-0 h-[2px] bg-vibrant"></div>
+                </div>
+            </div>
+            
+            <!-- Floating Subtitle -->
+            <div class="absolute bottom-10 left-0 w-full text-center text-purewhite font-sans text-sm md:text-lg tracking-[0.6em] opacity-0 z-10 uppercase elegant-sub">
+                The Placement Committee
+            </div>
+        </section>
+
+        <!-- Slide 2: Why Join? -->
+        <section class="slide overflow-hidden" id="slide-2" style="background-color: #fdfdfd;">
+            <!-- Subtle Grey Grid Background -->
+            <div class="absolute inset-0 z-0 pointer-events-none opacity-40" style="background-image: linear-gradient(to right, rgba(0,0,0,0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,0.04) 1px, transparent 1px); background-size: 60px 60px;"></div>
+
+                <!-- Fullscreen Word Display - Letters are individually animated -->
+                <div class="absolute inset-0 flex items-center justify-center z-10 pointer-events-none" id="options-container" style="perspective: 1200px;">
+                    
+                    <!-- Option 0: ACADEMICS -->
+                    <div class="why-option absolute flex items-center justify-center opacity-0" style="pointer-events:none;">
+                        <div class="flex">
+                            <span class="word-letter font-heading font-black uppercase tracking-[0.05em] select-none" style="font-size:clamp(3rem,8vw,10rem);color:#e5e7eb;display:inline-block;">A</span><span class="word-letter font-heading font-black uppercase tracking-[0.05em] select-none" style="font-size:clamp(3rem,8vw,10rem);color:#e5e7eb;display:inline-block;">C</span><span class="word-letter font-heading font-black uppercase tracking-[0.05em] select-none" style="font-size:clamp(3rem,8vw,10rem);color:#e5e7eb;display:inline-block;">A</span><span class="word-letter font-heading font-black uppercase tracking-[0.05em] select-none" style="font-size:clamp(3rem,8vw,10rem);color:#e5e7eb;display:inline-block;">D</span><span class="word-letter font-heading font-black uppercase tracking-[0.05em] select-none" style="font-size:clamp(3rem,8vw,10rem);color:#e5e7eb;display:inline-block;">E</span><span class="word-letter font-heading font-black uppercase tracking-[0.05em] select-none" style="font-size:clamp(3rem,8vw,10rem);color:#e5e7eb;display:inline-block;">M</span><span class="word-letter font-heading font-black uppercase tracking-[0.05em] select-none" style="font-size:clamp(3rem,8vw,10rem);color:#e5e7eb;display:inline-block;">I</span><span class="word-letter font-heading font-black uppercase tracking-[0.05em] select-none" style="font-size:clamp(3rem,8vw,10rem);color:#e5e7eb;display:inline-block;">C</span><span class="word-letter font-heading font-black uppercase tracking-[0.05em] select-none" style="font-size:clamp(3rem,8vw,10rem);color:#e5e7eb;display:inline-block;">S</span>
+                        </div>
+                    </div>
+
+                    <!-- Option 1: CONNECTIONS -->
+                    <div class="why-option absolute flex items-center justify-center opacity-0" style="pointer-events:none;">
+                        <div class="flex">
+                            <span class="word-letter font-heading font-black uppercase tracking-[0.05em] select-none" style="font-size:clamp(3rem,8vw,10rem);color:#e5e7eb;display:inline-block;">C</span><span class="word-letter font-heading font-black uppercase tracking-[0.05em] select-none" style="font-size:clamp(3rem,8vw,10rem);color:#e5e7eb;display:inline-block;">O</span><span class="word-letter font-heading font-black uppercase tracking-[0.05em] select-none" style="font-size:clamp(3rem,8vw,10rem);color:#e5e7eb;display:inline-block;">N</span><span class="word-letter font-heading font-black uppercase tracking-[0.05em] select-none" style="font-size:clamp(3rem,8vw,10rem);color:#e5e7eb;display:inline-block;">N</span><span class="word-letter font-heading font-black uppercase tracking-[0.05em] select-none" style="font-size:clamp(3rem,8vw,10rem);color:#e5e7eb;display:inline-block;">E</span><span class="word-letter font-heading font-black uppercase tracking-[0.05em] select-none" style="font-size:clamp(3rem,8vw,10rem);color:#e5e7eb;display:inline-block;">C</span><span class="word-letter font-heading font-black uppercase tracking-[0.05em] select-none" style="font-size:clamp(3rem,8vw,10rem);color:#e5e7eb;display:inline-block;">T</span><span class="word-letter font-heading font-black uppercase tracking-[0.05em] select-none" style="font-size:clamp(3rem,8vw,10rem);color:#e5e7eb;display:inline-block;">I</span><span class="word-letter font-heading font-black uppercase tracking-[0.05em] select-none" style="font-size:clamp(3rem,8vw,10rem);color:#e5e7eb;display:inline-block;">O</span><span class="word-letter font-heading font-black uppercase tracking-[0.05em] select-none" style="font-size:clamp(3rem,8vw,10rem);color:#e5e7eb;display:inline-block;">N</span><span class="word-letter font-heading font-black uppercase tracking-[0.05em] select-none" style="font-size:clamp(3rem,8vw,10rem);color:#e5e7eb;display:inline-block;">S</span>
+                        </div>
+                    </div>
+
+                    <!-- Option 2: PLACEMENTS -->
+                    <div class="why-option absolute flex flex-col items-center justify-center opacity-0" style="pointer-events:none;">
+                        <div class="flex placements-shine">
+                            <span class="word-letter font-heading font-black uppercase tracking-[0.05em] select-none" style="font-size:clamp(3rem,8vw,10rem);color:#7f1d1d;display:inline-block;">P</span><span class="word-letter font-heading font-black uppercase tracking-[0.05em] select-none" style="font-size:clamp(3rem,8vw,10rem);color:#7f1d1d;display:inline-block;">L</span><span class="word-letter font-heading font-black uppercase tracking-[0.05em] select-none" style="font-size:clamp(3rem,8vw,10rem);color:#7f1d1d;display:inline-block;">A</span><span class="word-letter font-heading font-black uppercase tracking-[0.05em] select-none" style="font-size:clamp(3rem,8vw,10rem);color:#7f1d1d;display:inline-block;">C</span><span class="word-letter font-heading font-black uppercase tracking-[0.05em] select-none" style="font-size:clamp(3rem,8vw,10rem);color:#7f1d1d;display:inline-block;">E</span><span class="word-letter font-heading font-black uppercase tracking-[0.05em] select-none" style="font-size:clamp(3rem,8vw,10rem);color:#7f1d1d;display:inline-block;">M</span><span class="word-letter font-heading font-black uppercase tracking-[0.05em] select-none" style="font-size:clamp(3rem,8vw,10rem);color:#7f1d1d;display:inline-block;">E</span><span class="word-letter font-heading font-black uppercase tracking-[0.05em] select-none" style="font-size:clamp(3rem,8vw,10rem);color:#7f1d1d;display:inline-block;">N</span><span class="word-letter font-heading font-black uppercase tracking-[0.05em] select-none" style="font-size:clamp(3rem,8vw,10rem);color:#7f1d1d;display:inline-block;">T</span><span class="word-letter font-heading font-black uppercase tracking-[0.05em] select-none" style="font-size:clamp(3rem,8vw,10rem);color:#7f1d1d;display:inline-block;">S</span>
+                        </div>
+                        <div class="w-0 h-[6px] bg-red-900 mt-2 rounded-full" id="placement-underline"></div>
+                    </div>
+                </div>
+
+            <!-- === VECTOR DRIVE TRANSITION OVERLAY === -->
+            <div id="drive-overlay" style="position:absolute;inset:0;z-index:50;display:none;background:#fdfdfd;overflow:hidden;">
+                <svg id="drive-vector-scene" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%;">
+                    <defs>
+                        <!-- Sky gradient -->
+                        <linearGradient id="sky-grad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#f5f0f0"/>
+                            <stop offset="100%" stop-color="#ffe8e8"/>
+                        </linearGradient>
+                        <!-- RED light glow -->
+                        <radialGradient id="sun-grad" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%"   stop-color="#ffffff"  stop-opacity="1"/>
+                            <stop offset="20%"  stop-color="#ff4444"  stop-opacity="0.95"/>
+                            <stop offset="60%"  stop-color="#7f1d1d"  stop-opacity="0.6"/>
+                            <stop offset="100%" stop-color="#7f1d1d"  stop-opacity="0"/>
+                        </radialGradient>
+                        <filter id="sun-glow" x="-200%" y="-200%" width="500%" height="500%">
+                            <feGaussianBlur stdDeviation="22" result="blur"/>
+                            <feMerge><feMergeNode in="blur"/><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                        </filter>
+                    </defs>
+
+                    <!-- Sky fill -->
+                    <rect x="0" y="0" width="1920" height="1080" fill="url(#sky-grad)"/>
+
+                    <!-- Horizon line -->
+                    <line id="vec-horizon" x1="0" y1="540" x2="1920" y2="540" stroke="#e0c0c0" stroke-width="1.5" opacity="0.6"/>
+
+                    <!-- Road edges — perspective lines from vanishing point -->
+                    <line id="vec-road-left"  x1="960" y1="540" x2="0"    y2="1080" stroke="#7f1d1d" stroke-width="4" opacity="0" stroke-linecap="round"/>
+                    <line id="vec-road-right" x1="960" y1="540" x2="1920" y2="1080" stroke="#7f1d1d" stroke-width="4" opacity="0" stroke-linecap="round"/>
+
+                    <!-- Outer kerb lines -->
+                    <line id="vec-kerb-left"  x1="960" y1="540" x2="-200"  y2="1080" stroke="#aaaaaa" stroke-width="1.5" opacity="0" stroke-linecap="round"/>
+                    <line id="vec-kerb-right" x1="960" y1="540" x2="2120"  y2="1080" stroke="#aaaaaa" stroke-width="1.5" opacity="0" stroke-linecap="round"/>
+
+                    <!-- Field depth lines -->
+                    <line id="vec-field-l1" x1="960" y1="540" x2="300"  y2="600" stroke="#cccccc" stroke-width="1" opacity="0"/>
+                    <line id="vec-field-l2" x1="960" y1="540" x2="100"  y2="650" stroke="#cccccc" stroke-width="1" opacity="0"/>
+                    <line id="vec-field-r1" x1="960" y1="540" x2="1620" y2="600" stroke="#cccccc" stroke-width="1" opacity="0"/>
+                    <line id="vec-field-r2" x1="960" y1="540" x2="1820" y2="650" stroke="#cccccc" stroke-width="1" opacity="0"/>
+
+                    <!-- ===== LINE-VECTOR TREES — LEFT SIDE ===== -->
+                    <!-- Trees are drawn purely with strokes: trunk (vertical line) + branches (diagonal lines) -->
+                    <!-- Far-left trees (small, near horizon) -->
+                    <g id="vec-trees-left" stroke="#555" stroke-linecap="round" fill="none" opacity="0">
+                        <!-- Tree L1 (far, small) -->
+                        <line x1="310" y1="540" x2="310" y2="590"/>
+                        <line x1="310" y1="556" x2="295" y2="543"/>
+                        <line x1="310" y1="556" x2="325" y2="543"/>
+                        <line x1="310" y1="566" x2="298" y2="553"/>
+                        <line x1="310" y1="566" x2="322" y2="553"/>
+                        <line x1="310" y1="575" x2="300" y2="562"/>
+                        <line x1="310" y1="575" x2="320" y2="562"/>
+                        <!-- Tree L2 (mid, medium) -->
+                        <line x1="170" y1="540" x2="170" y2="640" stroke-width="1.5"/>
+                        <line x1="170" y1="566" x2="145" y2="547"/>
+                        <line x1="170" y1="566" x2="195" y2="547"/>
+                        <line x1="170" y1="582" x2="147" y2="564"/>
+                        <line x1="170" y1="582" x2="193" y2="564"/>
+                        <line x1="170" y1="598" x2="148" y2="580"/>
+                        <line x1="170" y1="598" x2="192" y2="580"/>
+                        <line x1="170" y1="614" x2="150" y2="596"/>
+                        <line x1="170" y1="614" x2="190" y2="596"/>
+                        <!-- Tree L3 (close, large) -->
+                        <line x1="30"  y1="540" x2="30"  y2="780" stroke-width="2.5"/>
+                        <line x1="30"  y1="590" x2="-10" y2="560"/>
+                        <line x1="30"  y1="590" x2="70"  y2="560"/>
+                        <line x1="30"  y1="618" x2="-15" y2="585"/>
+                        <line x1="30"  y1="618" x2="75"  y2="585"/>
+                        <line x1="30"  y1="648" x2="-18" y2="615"/>
+                        <line x1="30"  y1="648" x2="78"  y2="615"/>
+                        <line x1="30"  y1="678" x2="-20" y2="648"/>
+                        <line x1="30"  y1="678" x2="80"  y2="648"/>
+                        <line x1="30"  y1="708" x2="-15" y2="682"/>
+                        <line x1="30"  y1="708" x2="75"  y2="682"/>
+                        <!-- Mid-distance L4 -->
+                        <line x1="430" y1="540" x2="430" y2="570" stroke-width="0.8"/>
+                        <line x1="430" y1="550" x2="420" y2="543"/>
+                        <line x1="430" y1="550" x2="440" y2="543"/>
+                        <line x1="430" y1="558" x2="422" y2="551"/>
+                        <line x1="430" y1="558" x2="438" y2="551"/>
+                        <!-- Mid-distance L5 -->
+                        <line x1="250" y1="540" x2="250" y2="610" stroke-width="1.2"/>
+                        <line x1="250" y1="558" x2="234" y2="546"/>
+                        <line x1="250" y1="558" x2="266" y2="546"/>
+                        <line x1="250" y1="572" x2="235" y2="560"/>
+                        <line x1="250" y1="572" x2="265" y2="560"/>
+                        <line x1="250" y1="586" x2="236" y2="575"/>
+                        <line x1="250" y1="586" x2="264" y2="575"/>
+                    </g>
+
+                    <!-- ===== LINE-VECTOR TREES — RIGHT SIDE ===== -->
+                    <g id="vec-trees-right" stroke="#555" stroke-linecap="round" fill="none" opacity="0">
+                        <!-- Tree R1 (far, small) -->
+                        <line x1="1610" y1="540" x2="1610" y2="590"/>
+                        <line x1="1610" y1="556" x2="1595" y2="543"/>
+                        <line x1="1610" y1="556" x2="1625" y2="543"/>
+                        <line x1="1610" y1="566" x2="1598" y2="553"/>
+                        <line x1="1610" y1="566" x2="1622" y2="553"/>
+                        <line x1="1610" y1="575" x2="1600" y2="562"/>
+                        <line x1="1610" y1="575" x2="1620" y2="562"/>
+                        <!-- Tree R2 (mid) -->
+                        <line x1="1750" y1="540" x2="1750" y2="640" stroke-width="1.5"/>
+                        <line x1="1750" y1="566" x2="1725" y2="547"/>
+                        <line x1="1750" y1="566" x2="1775" y2="547"/>
+                        <line x1="1750" y1="582" x2="1727" y2="564"/>
+                        <line x1="1750" y1="582" x2="1773" y2="564"/>
+                        <line x1="1750" y1="598" x2="1728" y2="580"/>
+                        <line x1="1750" y1="598" x2="1772" y2="580"/>
+                        <line x1="1750" y1="614" x2="1730" y2="596"/>
+                        <line x1="1750" y1="614" x2="1770" y2="596"/>
+                        <!-- Tree R3 (close, large) -->
+                        <line x1="1890" y1="540" x2="1890" y2="780" stroke-width="2.5"/>
+                        <line x1="1890" y1="590" x2="1850" y2="560"/>
+                        <line x1="1890" y1="590" x2="1930" y2="560"/>
+                        <line x1="1890" y1="618" x2="1845" y2="585"/>
+                        <line x1="1890" y1="618" x2="1935" y2="585"/>
+                        <line x1="1890" y1="648" x2="1842" y2="615"/>
+                        <line x1="1890" y1="648" x2="1938" y2="615"/>
+                        <line x1="1890" y1="678" x2="1840" y2="648"/>
+                        <line x1="1890" y1="678" x2="1940" y2="648"/>
+                        <line x1="1890" y1="708" x2="1845" y2="682"/>
+                        <line x1="1890" y1="708" x2="1935" y2="682"/>
+                        <!-- Mid-distance R4 -->
+                        <line x1="1490" y1="540" x2="1490" y2="570" stroke-width="0.8"/>
+                        <line x1="1490" y1="550" x2="1480" y2="543"/>
+                        <line x1="1490" y1="550" x2="1500" y2="543"/>
+                        <line x1="1490" y1="558" x2="1482" y2="551"/>
+                        <line x1="1490" y1="558" x2="1498" y2="551"/>
+                        <!-- Mid-distance R5 -->
+                        <line x1="1670" y1="540" x2="1670" y2="610" stroke-width="1.2"/>
+                        <line x1="1670" y1="558" x2="1654" y2="546"/>
+                        <line x1="1670" y1="558" x2="1686" y2="546"/>
+                        <line x1="1670" y1="572" x2="1655" y2="560"/>
+                        <line x1="1670" y1="572" x2="1685" y2="560"/>
+                        <line x1="1670" y1="586" x2="1656" y2="575"/>
+                        <line x1="1670" y1="586" x2="1684" y2="575"/>
+                    </g>
+
+                    <!-- Lane markers container -->
+                    <g id="vec-lanes"></g>
+
+                    <!-- RED LIGHT at vanishing point -->
+                    <circle id="vec-sun-halo" cx="960" cy="540" r="80"  fill="url(#sun-grad)" opacity="0"/>
+                    <circle id="vec-sun"      cx="960" cy="540" r="10"  fill="#ff2222"        opacity="0" filter="url(#sun-glow)"/>
+                </svg>
+            </div>
+            <!-- Foreground Question Overlay - Elegant Minimalist Typography -->
+            <div class="absolute inset-x-0 top-0 flex justify-center z-30 pointer-events-none" style="padding: 5rem 3rem 0;">
+                <div class="relative w-full text-center" id="why-overlay-card">
+                    <div class="inline-block relative">
+                        <p class="font-sans text-[10px] md:text-xs tracking-[0.8em] uppercase mb-4" style="color:rgba(0,0,0,0.4);" id="why-join-sub">The Ultimate Question</p>
+                        <h2 class="font-heading leading-tight" style="font-size:clamp(2rem,4.5vw,4rem);color:#111; letter-spacing: -0.02em;" id="why-join-text">
+                            <span class="font-light">Why did you join an </span><span class="font-black text-[#7f1d1d]">IIM</span><span class="font-black">?</span>
+                        </h2>
+                        <!-- Delicate minimalist line -->
+                        <div class="absolute left-1/2 transform -translate-x-1/2 -bottom-6 w-12 h-[1px] bg-[#7f1d1d] opacity-40"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 3: Who are we? -->
+        <section class="slide" id="slide-3" style="background-color: #ffffff; overflow: hidden;">
+            <!-- "Who are we?" Title -->
+            <div id="who-are-we-container" class="absolute w-full h-full flex items-center justify-center">
+                <h2 id="who-are-we-text" style="font-size: clamp(5rem, 12vw, 13rem); font-weight: 900; color: #111111; text-transform: uppercase; line-height: 1; letter-spacing: -0.05em;">
+                    Who<br>are we<span style="color: #7f1d1d;">?</span>
+                </h2>
+            </div>
+
+            <!-- Bookish Definition -->
+            <div id="bookish-def-container" class="absolute w-full h-full flex flex-col items-center justify-center opacity-0 pointer-events-none" style="padding: 0 10%;">
+                        <div class="max-w-5xl w-full border-l-8 border-gray-200 pl-8" style="min-height: 250px;">
+                    <p id="bookish-text" class="font-sans text-3xl md:text-5xl lg:text-6xl text-gray-800 leading-tight text-left font-medium">
+                        <!-- JS Types this -->
+                    </p>
+                </div>
+                
+                <!-- The Stomp -->
+                <div id="boring-stamp" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 -rotate-[12deg] scale-[2] border-[12px] border-[#7f1d1d] p-8 md:p-12 rounded-3xl bg-white/95 backdrop-blur-md mix-blend-multiply flex items-center justify-center" style="box-shadow: 0 30px 60px rgba(0,0,0,0.4);">
+                    <h1 class="font-black text-6xl md:text-8xl lg:text-9xl text-[#7f1d1d] uppercase leading-[0.9] text-center tracking-tighter">
+                        Obviously<br>Not That<br>
+                        <div class="inline-block" id="stamp-boring">
+                            <span class="stamp-letter inline-block">B</span><span class="stamp-letter inline-block">O</span><span class="stamp-letter inline-block">R</span><span class="stamp-letter inline-block">I</span><span class="stamp-letter inline-block">N</span><span class="stamp-letter inline-block">G</span>
+                        </div>
+                    </h1>
+                </div>
+            </div>
+        </section>
+
+        
+        
+        
+        <!-- Slide 4: Team & Corporate Partners -->
+        <section class="slide bg-gradient-to-br from-[#2c2c2e] to-[#141416]" id="slide-4" style="overflow: hidden; position: absolute; perspective: 1000px;">
+            
+            <!-- Animated Dark Premium Background -->
+            <div class="absolute inset-0 bg-gradient-to-br from-[#252528] via-[#1c1c1f] to-[#151518] z-0"></div>
+            
+            <!-- Floating 3D Logos Background -->
+            <div id="company-logos-bg" class="absolute inset-0 z-0 flex flex-wrap justify-center items-center opacity-40 pointer-events-none" style="transform-style: preserve-3d;">
+                <!-- Generating 15 floating logos -->
+                <style>
+                @keyframes marqueeLeft {
+                    0% { transform: translateX(0); }
+                    100% { transform: translateX(-33.33%); }
+                }
+                @keyframes marqueeRight {
+                    0% { transform: translateX(-33.33%); }
+                    100% { transform: translateX(0); }
+                }
+                .animate-marquee-left {
+                    animation: marqueeLeft linear infinite;
+                    width: max-content;
+                }
+                .animate-marquee-right {
+                    animation: marqueeRight linear infinite;
+                    width: max-content;
+                }
+                </style>
+                <script>
+                    const logos = ["Logos/Screenshot 2026-06-27 at 11.57.14.png","Logos/Screenshot 2026-06-27 at 11.57.47.png","Logos/Screenshot 2026-06-27 at 11.57.55.png","Logos/Screenshot 2026-06-27 at 11.58.03.png","Logos/Screenshot 2026-06-27 at 11.58.10.png","Logos/Screenshot 2026-06-27 at 11.58.16.png","Logos/Screenshot 2026-06-27 at 11.58.24.png","Logos/Screenshot 2026-06-27 at 11.58.33.png","Logos/Screenshot 2026-06-27 at 11.58.39.png","Logos/Screenshot 2026-06-27 at 11.58.48.png","Logos/Screenshot 2026-06-27 at 11.58.55.png","Logos/Screenshot 2026-06-27 at 11.59.03.png","Logos/Screenshot 2026-06-27 at 11.59.09.png","Logos/Screenshot 2026-06-27 at 11.59.15.png","Logos/Screenshot 2026-06-27 at 11.59.28.png","Logos/Screenshot 2026-06-27 at 11.59.40.png","Logos/Screenshot 2026-06-27 at 11.59.48.png","Logos/Screenshot 2026-06-27 at 12.00.00.png","Logos/Screenshot 2026-06-27 at 12.00.06.png","Logos/Screenshot 2026-06-27 at 12.00.13.png","Logos/Screenshot 2026-06-27 at 12.00.19.png","Logos/Screenshot 2026-06-27 at 12.25.29.png","Logos/Screenshot 2026-06-27 at 12.25.36.png","Logos/Screenshot 2026-06-27 at 12.25.43.png","Logos/Screenshot 2026-06-27 at 12.25.50.png","Logos/Screenshot 2026-06-27 at 12.26.05.png","Logos/Screenshot 2026-06-27 at 12.26.11.png","Logos/Screenshot 2026-06-27 at 12.26.17.png","Logos/Screenshot 2026-06-27 at 12.26.34.png","Logos/Screenshot 2026-06-27 at 12.26.40.png","Logos/Screenshot 2026-06-27 at 12.26.48.png","Logos/Screenshot 2026-06-27 at 12.26.55.png","Logos/Screenshot 2026-06-27 at 12.27.02.png","Logos/Screenshot 2026-06-27 at 12.27.09.png","Logos/Screenshot 2026-06-27 at 12.27.15.png","Logos/Screenshot 2026-06-27 at 12.27.21.png","Logos/Screenshot 2026-06-27 at 12.27.26.png","Logos/Screenshot 2026-06-27 at 12.27.48.png","Logos/Screenshot 2026-06-27 at 12.27.58.png","Logos/Screenshot 2026-06-27 at 12.28.04.png","Logos/Screenshot 2026-06-27 at 12.28.10.png","Logos/Screenshot 2026-06-27 at 12.28.19.png","Logos/Screenshot 2026-06-27 at 12.28.30.png","Logos/Screenshot 2026-06-27 at 12.28.36.png","Logos/Screenshot 2026-06-27 at 12.28.45.png","Logos/Screenshot 2026-06-27 at 12.28.52.png","Logos/Screenshot 2026-06-27 at 12.28.59.png","Logos/Screenshot 2026-06-27 at 12.29.07.png","Logos/Screenshot 2026-06-27 at 12.29.14.png","Logos/Screenshot 2026-06-27 at 12.30.47.png","Logos/Screenshot 2026-06-27 at 12.30.54.png","Logos/Screenshot 2026-06-27 at 12.31.03.png","Logos/Screenshot 2026-06-27 at 12.31.13.png","Logos/Screenshot 2026-06-27 at 12.31.21.png","Logos/Screenshot 2026-06-27 at 12.31.31.png","Logos/Screenshot 2026-06-27 at 12.31.38.png","Logos/Screenshot 2026-06-27 at 12.31.48.png","Logos/Screenshot 2026-06-27 at 12.31.55.png","Logos/Screenshot 2026-06-27 at 12.32.04.png","Logos/Screenshot 2026-06-27 at 12.32.12.png","Logos/Screenshot 2026-06-27 at 12.32.20.png","Logos/Screenshot 2026-06-27 at 12.32.27.png","Logos/Screenshot 2026-06-27 at 12.32.33.png","Logos/Screenshot 2026-06-27 at 12.34.08.png","Logos/Screenshot 2026-06-27 at 12.34.16.png","Logos/Screenshot 2026-06-27 at 12.34.24.png","Logos/Screenshot 2026-06-27 at 12.34.33.png","Logos/Screenshot 2026-06-27 at 12.34.41.png","Logos/Screenshot 2026-06-27 at 12.34.49.png","Logos/Screenshot 2026-06-27 at 12.34.58.png","Logos/Screenshot 2026-06-27 at 12.35.43.png","Logos/Screenshot 2026-06-27 at 12.35.50.png","Logos/Screenshot 2026-06-27 at 12.35.57.png","Logos/Screenshot 2026-06-27 at 12.36.05.png","Logos/Screenshot 2026-06-27 at 12.36.14.png","Logos/Screenshot 2026-06-27 at 12.36.21.png","Logos/Screenshot 2026-06-27 at 12.36.30.png","Logos/Screenshot 2026-06-27 at 12.36.43.png","Logos/Screenshot 2026-06-27 at 12.36.50.png","Logos/Screenshot 2026-06-27 at 12.36.59.png","Logos/Screenshot 2026-06-27 at 12.37.09.png","Logos/Screenshot 2026-06-27 at 12.37.16.png","Logos/Screenshot 2026-06-27 at 12.37.21.png","Logos/Screenshot 2026-06-27 at 12.37.28.png","Logos/Screenshot 2026-06-27 at 12.37.36.png","Logos/Screenshot 2026-06-27 at 12.37.41.png","Logos/Screenshot 2026-06-27 at 12.37.47.png"];
+                    const rows = 6;
+                    const logosPerRow = Math.ceil(logos.length / rows);
+                    
+                    let wallHtml = '<div class="absolute inset-0 flex flex-col justify-around overflow-hidden opacity-0" id="company-logos-wall" style="transform: scale(1.1) rotate(-3deg);">';
+                    
+                    for (let r = 0; r < rows; r++) {
+                        const direction = r % 2 === 0 ? 'animate-marquee-left' : 'animate-marquee-right';
+                        const duration = 40 + Math.random() * 20; 
+                        
+                        let rowLogos = logos.slice(r * logosPerRow, (r + 1) * logosPerRow);
+                        // Triplicate for infinite seamless marquee
+                        rowLogos = [...rowLogos, ...rowLogos, ...rowLogos];
+                        
+                        wallHtml += '\n<div class="flex whitespace-nowrap ' + direction + ' items-center" style="animation-duration: ' + duration + 's; gap: 6rem;">';
+                        
+                        rowLogos.forEach(logoUrl => {
+                            wallHtml += '<div class="flex-shrink-0 w-64 h-32 md:w-80 md:h-40 flex items-center justify-center"><img src="' + logoUrl + '" class="w-full h-full object-contain" style="filter: invert(1) grayscale(100%) contrast(1.5) brightness(1.5); mix-blend-mode: screen; opacity: 0.4;" /></div>';
+                        });
+                        
+                        wallHtml += '</div>';
+                    }
+                    wallHtml += '</div>';
+                    document.write(wallHtml);
+                </script>
+            </div>
+
+            
+        </section>
+<!-- Slide 5: Achievements -->
+        <section class="slide bg-white" id="slide-5" style="overflow: hidden;">
+            <div class="absolute inset-0 bg-gradient-to-br from-[#fdfdfd] to-[#f4f4f4] z-0"></div>
+            
+            <div class="relative w-full h-full flex flex-col items-center justify-center px-8 md:px-16 z-10 mx-auto" id="achievements-container">
+                <h2 class="font-heading text-5xl md:text-7xl font-black text-[#7f1d1d] uppercase tracking-tighter absolute top-12 md:top-20 opacity-0 z-20" id="achievements-title">Achievements</h2>
+                
+                <div class="w-full max-w-[1800px] flex flex-wrap justify-center gap-6 md:gap-10 relative z-20 mt-16 md:mt-24">
+                    <!-- Row 1: 3 big stats -->
+                    <div class="achievement-card opacity-0 flex flex-col items-center justify-center p-10 md:p-16 bg-white rounded-[40px] shadow-[0_15px_60px_rgba(0,0,0,0.06)] border border-gray-100 w-full sm:w-[45%] lg:w-[31%] text-center relative overflow-hidden group" style="transform: translateY(40px);">
+                        <div class="absolute top-0 left-0 w-full h-2 bg-[#7f1d1d] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+                        <h3 class="font-heading font-black text-7xl md:text-8xl lg:text-[140px] leading-none text-[#111] flex items-baseline">
+                            <span class="counter" data-target="100">0</span><span class="text-[#7f1d1d] ml-1 md:ml-2">%</span>
+                        </h3>
+                        <p class="font-sans text-gray-500 uppercase tracking-widest mt-6 md:mt-8 text-xs md:text-base font-bold">Placement for past years</p>
+                    </div>
+
+                    <div class="achievement-card opacity-0 flex flex-col items-center justify-center p-10 md:p-16 bg-white rounded-[40px] shadow-[0_15px_60px_rgba(0,0,0,0.06)] border border-gray-100 w-full sm:w-[45%] lg:w-[31%] text-center relative overflow-hidden group" style="transform: translateY(40px);">
+                        <div class="absolute top-0 left-0 w-full h-2 bg-[#7f1d1d] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+                        <h3 class="font-heading font-black text-7xl md:text-8xl lg:text-[140px] leading-none text-[#111] flex items-baseline">
+                            <span class="counter" data-target="140">0</span><span class="text-[#7f1d1d] ml-1 md:ml-2">+</span>
+                        </h3>
+                        <p class="font-sans text-gray-500 uppercase tracking-widest mt-6 md:mt-8 text-xs md:text-base font-bold">New recruiters</p>
+                    </div>
+
+                    <div class="achievement-card opacity-0 flex flex-col items-center justify-center p-10 md:p-16 bg-white rounded-[40px] shadow-[0_15px_60px_rgba(0,0,0,0.06)] border border-gray-100 w-full sm:w-[45%] lg:w-[31%] text-center relative overflow-hidden group" style="transform: translateY(40px);">
+                        <div class="absolute top-0 left-0 w-full h-2 bg-[#7f1d1d] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+                        <h3 class="font-heading font-black text-7xl md:text-8xl lg:text-[140px] leading-none text-[#111] flex items-baseline">
+                            <span class="counter" data-target="250">0</span><span class="text-[#7f1d1d] ml-1 md:ml-2">+</span>
+                        </h3>
+                        <p class="font-sans text-gray-500 uppercase tracking-widest mt-6 md:mt-8 text-xs md:text-base font-bold">Companies hosted (Final)</p>
+                    </div>
+
+                    <!-- Row 2: 4 smaller stats -->
+                    <div class="achievement-card opacity-0 flex flex-col items-center justify-center p-8 md:p-12 bg-white rounded-[40px] shadow-[0_15px_60px_rgba(0,0,0,0.06)] border border-gray-100 w-full sm:w-[45%] lg:w-[23%] text-center relative overflow-hidden group" style="transform: translateY(40px);">
+                        <div class="absolute top-0 left-0 w-full h-1.5 bg-[#7f1d1d] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+                        <h3 class="font-heading font-black text-6xl md:text-7xl lg:text-[100px] leading-none text-[#111] flex items-baseline">
+                            <span class="counter" data-target="150">0</span><span class="text-[#7f1d1d] ml-1 md:ml-2">+</span>
+                        </h3>
+                        <p class="font-sans text-gray-500 uppercase tracking-widest mt-4 md:mt-6 text-xs md:text-sm font-bold">Companies (Summer)</p>
+                    </div>
+
+                    <div class="achievement-card opacity-0 flex flex-col items-center justify-center p-8 md:p-12 bg-white rounded-[40px] shadow-[0_15px_60px_rgba(0,0,0,0.06)] border border-gray-100 w-full sm:w-[45%] lg:w-[23%] text-center relative overflow-hidden group" style="transform: translateY(40px);">
+                        <div class="absolute top-0 left-0 w-full h-1.5 bg-[#7f1d1d] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+                        <h3 class="font-heading font-black text-6xl md:text-7xl lg:text-[100px] leading-none text-[#111] flex items-baseline">
+                            <span class="counter" data-target="7000">0</span><span class="text-[#7f1d1d] ml-1 md:ml-2">+</span>
+                        </h3>
+                        <p class="font-sans text-gray-500 uppercase tracking-widest mt-4 md:mt-6 text-xs md:text-sm font-bold">Companies Connected</p>
+                    </div>
+
+                    <div class="achievement-card opacity-0 flex flex-col items-center justify-center p-8 md:p-12 bg-white rounded-[40px] shadow-[0_15px_60px_rgba(0,0,0,0.06)] border border-gray-100 w-full sm:w-[45%] lg:w-[23%] text-center relative overflow-hidden group" style="transform: translateY(40px);">
+                        <div class="absolute top-0 left-0 w-full h-1.5 bg-[#7f1d1d] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+                        <h3 class="font-heading font-black text-6xl md:text-7xl lg:text-[100px] leading-none text-[#111] flex items-baseline">
+                            <span class="counter" data-target="6.9" data-decimals="1">0</span><span class="text-[#7f1d1d] ml-1 md:ml-2">%</span>
+                        </h3>
+                        <p class="font-sans text-gray-500 uppercase tracking-widest mt-4 md:mt-6 text-xs md:text-sm font-bold">CTC Increase</p>
+                    </div>
+
+                    <div class="achievement-card opacity-0 flex flex-col items-center justify-center p-8 md:p-12 bg-white rounded-[40px] shadow-[0_15px_60px_rgba(0,0,0,0.06)] border border-gray-100 w-full sm:w-[45%] lg:w-[23%] text-center relative overflow-hidden group" style="transform: translateY(40px);">
+                        <div class="absolute top-0 left-0 w-full h-1.5 bg-[#7f1d1d] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+                        <h3 class="font-heading font-black text-6xl md:text-7xl lg:text-[100px] leading-none text-[#111] flex items-baseline">
+                            <span class="counter" data-target="40">0</span><span class="text-[#7f1d1d] ml-1 md:ml-2">+</span>
+                        </h3>
+                        <p class="font-sans text-gray-500 uppercase tracking-widest mt-4 md:mt-6 text-xs md:text-sm font-bold">PPOs</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        
+
+<!-- Slide 6: Roles & Responsibilities / Thread Morph -->
+        <section class="slide bg-white overflow-hidden flex" id="slide-6">
+            
+            <!-- Left: Text Content -->
+            <div class="w-full md:w-1/2 h-full flex flex-col justify-center px-12 md:px-24 relative z-20">
+                <!-- Sticky Header with Shimmer -->
+                <div class="relative inline-block mb-16">
+                    <h2 class="font-heading text-4xl md:text-5xl font-black text-[#111] uppercase tracking-widest relative z-10" id="roles-header">Roles & Responsibilities</h2>
+                    <h2 class="font-heading text-4xl md:text-5xl font-black text-[#7f1d1d] uppercase tracking-widest absolute top-0 left-0 z-0 blur-[4px] opacity-0" id="roles-header-glow">Roles & Responsibilities</h2>
+                    <div class="h-1 bg-[#7f1d1d] w-1/3 mt-4 origin-left" id="roles-header-line"></div>
+                </div>
+                
+                <!-- Text Container -->
+                <div class="relative h-[300px]">
+                    <!-- Role 1 -->
+                    <div class="role-text-card absolute inset-0 flex flex-col gap-4">
+                        <div class="text-[#7f1d1d] font-black text-6xl md:text-8xl leading-none opacity-20 tracking-tighter absolute -top-12 -left-8 -z-10">01</div>
+                        <h3 class="font-heading text-4xl md:text-5xl font-black text-[#111] uppercase">Represent the Institute</h3>
+                        <p class="font-sans text-xl md:text-2xl text-gray-600 font-light leading-relaxed">Act as an interface between students and corporate to build long-lasting relationship with the corporate.</p>
+                    </div>
+                    <!-- Role 2 -->
+                    <div class="role-text-card absolute inset-0 flex flex-col gap-4 opacity-0 pointer-events-none transform translate-y-8">
+                        <div class="text-[#7f1d1d] font-black text-6xl md:text-8xl leading-none opacity-20 tracking-tighter absolute -top-12 -left-8 -z-10">02</div>
+                        <h3 class="font-heading text-4xl md:text-5xl font-black text-[#111] uppercase">Placements</h3>
+                        <p class="font-sans text-xl md:text-2xl text-gray-600 font-light leading-relaxed">Facilitate every Step of Summer Internship and Final Placements. From Company Onboarding to Efficient Process Scheduling, Selection Rounds, and Post-Selection Management.</p>
+                    </div>
+                    <!-- Role 3 -->
+                    <div class="role-text-card absolute inset-0 flex flex-col gap-4 opacity-0 pointer-events-none transform translate-y-8">
+                        <div class="text-[#7f1d1d] font-black text-6xl md:text-8xl leading-none opacity-20 tracking-tighter absolute -top-12 -left-8 -z-10">03</div>
+                        <h3 class="font-heading text-4xl md:text-5xl font-black text-[#111] uppercase">Corporate Engagements</h3>
+                        <p class="font-sans text-xl md:text-2xl text-gray-600 font-light leading-relaxed">Provide opportunities for corporate engagement like live projects and case competitions.</p>
+                    </div>
+                    <!-- Role 4 -->
+                    <div class="role-text-card absolute inset-0 flex flex-col gap-4 opacity-0 pointer-events-none transform translate-y-8">
+                        <div class="text-[#7f1d1d] font-black text-6xl md:text-8xl leading-none opacity-20 tracking-tighter absolute -top-12 -left-8 -z-10">04</div>
+                        <h3 class="font-heading text-4xl md:text-5xl font-black text-[#111] uppercase">Managing Stakeholders</h3>
+                        <p class="font-sans text-xl md:text-2xl text-gray-600 font-light leading-relaxed">Working closely with various stakeholders to provide the perfect launch pad to the students.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Thread / SVG Canvas -->
+            <div class="hidden md:flex w-1/2 h-full relative items-center justify-center bg-[#fcfcfc] overflow-hidden">
+                <!-- Subtle background elements moving -->
+                <div class="absolute inset-0 z-0">
+                    <div class="w-96 h-96 border border-gray-200 rounded-full absolute -top-12 -right-12" id="bg-circle-1"></div>
+                    <div class="w-[600px] h-[600px] border border-gray-100 rounded-full absolute -bottom-24 -left-24" id="bg-circle-2"></div>
+                </div>
+                
+                <svg viewBox="0 0 24 24" class="w-[400px] h-[400px] lg:w-[600px] lg:h-[600px] relative z-10" id="roles-svg">
+                    <defs>
+                        <filter id="thread-glow" x="-20%" y="-20%" width="140%" height="140%">
+                            <feGaussianBlur stdDeviation="0.5" result="blur" />
+                            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                        </filter>
+                    </defs>
+                    <!-- Institute -->
+                    <path class="role-path" d="M3 21h18 M3 10h18 M5 6l7-3 7 3 M4 10v11 M20 10v11 M8 14v7 M12 14v7 M16 14v7" fill="none" stroke="#7f1d1d" stroke-width="0.3" stroke-linecap="round" stroke-linejoin="round" filter="url(#thread-glow)"/>
+                    <!-- Placements (Calendar) -->
+                    <path class="role-path" d="M3 6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6z M16 2v4 M8 2v4 M3 10h18" fill="none" stroke="#7f1d1d" stroke-width="0.3" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0;" filter="url(#thread-glow)"/>
+                    <!-- Engage (Globe) -->
+                    <path class="role-path" d="M12 2a10 10 0 1 1 0 20 10 10 0 1 1 0-20z M2 12h20 M12 2c2.5 0 5 4.5 5 10s-2.5 10-5 10-5-4.5-5-10 2.5-10 5-10z" fill="none" stroke="#7f1d1d" stroke-width="0.3" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0;" filter="url(#thread-glow)"/>
+                    <!-- Stakeholders (Users) -->
+                    <path class="role-path" d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2 M12 4a4 4 0 1 1 0 8a4 4 0 1 1 0-8z" fill="none" stroke="#7f1d1d" stroke-width="0.3" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0;" filter="url(#thread-glow)"/>
+                </svg>
+            </div>
+        </section>
+
+        <!-- Slide 7: Why Join Us -->
+        <section class="slide bg-darkest overflow-hidden" id="slide-7">
+            <!-- Header -->
+            <div class="absolute top-12 left-8 md:top-20 md:left-24 z-50 pointer-events-none">
+                <h2 class="font-heading text-4xl md:text-6xl font-black text-white uppercase tracking-widest drop-shadow-xl opacity-0" id="why-header">Why Join Us?</h2>
+                <div class="h-1 bg-white w-1/3 mt-4 origin-left" id="why-header-line" style="transform: scaleX(0);"></div>
+            </div>
+            
+            <!-- Slides Container -->
+            <div class="absolute inset-0 z-10" id="why-slider-container">
+                <!-- Screen 1 -->
+                <div class="why-sub-slide absolute inset-0 bg-[#4a0404] flex flex-col justify-center items-center px-8 md:px-32 text-center" style="transform: translateX(0%); z-index: 5;">
+                    
+                    <h3 class="font-heading text-5xl md:text-7xl lg:text-[90px] leading-tight font-black text-white uppercase relative z-10 why-anim">Become Face of the Institute</h3>
+                    <p class="font-sans text-xl md:text-3xl text-white/90 font-bold tracking-widest mt-6 relative z-10 why-anim">A New Identity</p>
+                </div>
+
+                <!-- Screen 2 -->
+                <div class="why-sub-slide absolute inset-0 bg-[#4a0404] flex flex-col justify-center items-center px-8 md:px-32 text-center" style="transform: translateX(100%); z-index: 4;">
+                    
+                    <h3 class="font-heading text-5xl md:text-7xl lg:text-[90px] leading-tight font-black text-white uppercase relative z-10 why-anim">Join the Best Network</h3>
+                    <p class="font-sans text-xl md:text-3xl text-white/90 font-bold tracking-widest mt-6 relative z-10 why-anim">Built over 16 years of legacy</p>
+                </div>
+
+                <!-- Screen 3 -->
+                <div class="why-sub-slide absolute inset-0 bg-[#4a0404] flex flex-col justify-center items-center px-8 md:px-32 text-center" style="transform: translateX(100%); z-index: 3;">
+                    
+                    <h3 class="font-heading text-5xl md:text-7xl lg:text-[90px] leading-tight font-black text-white uppercase relative z-10 why-anim">Build a Profile</h3>
+                    <p class="font-sans text-lg md:text-2xl text-white/90 font-bold tracking-widest mt-6 relative z-10 why-anim max-w-5xl">Nobody can ignore & gain experience of multiple combined internships</p>
+                </div>
+
+                <!-- Screen 4 -->
+                <div class="why-sub-slide absolute inset-0 bg-[#4a0404] flex flex-col justify-center items-center px-8 md:px-32 text-center" style="transform: translateX(100%); z-index: 2;">
+                    
+                    <h3 class="font-heading text-5xl md:text-7xl lg:text-[90px] leading-tight font-black text-white uppercase relative z-10 why-anim">Drive the Moment</h3>
+                    <p class="font-sans text-xl md:text-3xl text-white/90 font-bold tracking-widest mt-6 relative z-10 why-anim">That defines every batch</p>
+                </div>
+
+                <!-- Screen 5 -->
+                <div class="why-sub-slide absolute inset-0 bg-[#4a0404] flex flex-col justify-center items-center px-8 md:px-32 text-center" style="transform: translateX(100%); z-index: 1;">
+                    
+                    <h3 class="font-heading text-5xl md:text-7xl lg:text-[90px] leading-tight font-black text-white uppercase relative z-10 why-anim">One Committee.</h3>
+                    <p class="font-sans text-xl md:text-3xl text-white/90 font-bold tracking-widest mt-6 relative z-10 why-anim">Total Skillsets. Zero Limits.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 8: What will you learn? -->
+        <section class="slide overflow-hidden flex flex-col bg-[#fdfdfd]" id="slide-8">
+            
+            <!-- Fixed Header at the top left -->
+            <div class="absolute top-12 left-8 md:top-20 md:left-24 z-50 pointer-events-none learn-header-anim" style="opacity: 0; transform: translateY(-20px);">
+                <h2 class="font-heading text-4xl md:text-6xl font-black text-[#4a0404] uppercase tracking-widest drop-shadow-sm">What will you <span class="text-[#7f1d1d]">Learn?</span></h2>
+                <div class="h-1 bg-[#7f1d1d] w-1/3 mt-4 origin-left learn-header-line" style="transform: scaleX(0);"></div>
+            </div>
+
+            <!-- Architectural Grid Layout -->
+            <div class="relative w-full h-[70vh] max-w-[92vw] mx-auto mt-auto mb-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 grid-rows-2 gap-0">
+                
+                <!-- Animated Grid Lines -->
+                <div class="absolute top-0 left-0 w-full h-px bg-gray-200 learn-h-line" style="transform: scaleX(0); transform-origin: left;"></div>
+                <div class="absolute top-1/2 left-0 w-full h-px bg-gray-200 learn-h-line" style="transform: scaleX(0); transform-origin: left;"></div>
+                <div class="absolute bottom-0 left-0 w-full h-px bg-gray-200 learn-h-line" style="transform: scaleX(0); transform-origin: left;"></div>
+                
+                <div class="absolute top-0 left-0 w-px h-full bg-gray-200 learn-v-line" style="transform: scaleY(0); transform-origin: top;"></div>
+                <div class="absolute top-0 left-1/4 w-px h-full bg-gray-200 learn-v-line hidden lg:block" style="transform: scaleY(0); transform-origin: top;"></div>
+                <div class="absolute top-0 left-2/4 w-px h-full bg-gray-200 learn-v-line hidden md:block" style="transform: scaleY(0); transform-origin: top;"></div>
+                <div class="absolute top-0 left-3/4 w-px h-full bg-gray-200 learn-v-line hidden lg:block" style="transform: scaleY(0); transform-origin: top;"></div>
+                <div class="absolute top-0 right-0 w-px h-full bg-gray-200 learn-v-line" style="transform: scaleY(0); transform-origin: top;"></div>
+
+                <!-- 01 Strategy -->
+                <div class="relative p-6 md:p-10 flex flex-col justify-end overflow-hidden group">
+                    <span class="absolute top-4 right-6 text-7xl md:text-[140px] font-black text-gray-100 leading-none -z-10 select-none learn-num" style="transform: translateY(40px); opacity: 0;">01</span>
+                    <div class="learn-text" style="opacity: 0; transform: translateY(20px);">
+                        <h3 class="text-[#4a0404] font-heading font-black text-2xl md:text-3xl uppercase tracking-widest group-hover:text-[#7f1d1d] transition-colors duration-300">Strategy</h3>
+                        <p class="text-xs md:text-sm text-gray-500 mt-2 font-sans font-bold tracking-wider uppercase">Master the big picture</p>
+                    </div>
+                    <div class="absolute bottom-0 left-0 w-0 h-1 bg-[#7f1d1d] group-hover:w-full transition-all duration-500 ease-out"></div>
+                </div>
+
+                <!-- 02 Planning -->
+                <div class="relative p-6 md:p-10 flex flex-col justify-end overflow-hidden group">
+                    <span class="absolute top-4 right-6 text-7xl md:text-[140px] font-black text-gray-100 leading-none -z-10 select-none learn-num" style="transform: translateY(40px); opacity: 0;">02</span>
+                    <div class="learn-text" style="opacity: 0; transform: translateY(20px);">
+                        <h3 class="text-[#4a0404] font-heading font-black text-2xl md:text-3xl uppercase tracking-widest group-hover:text-[#7f1d1d] transition-colors duration-300">Planning</h3>
+                        <p class="text-xs md:text-sm text-gray-500 mt-2 font-sans font-bold tracking-wider uppercase">Structure the chaos</p>
+                    </div>
+                    <div class="absolute bottom-0 left-0 w-0 h-1 bg-[#7f1d1d] group-hover:w-full transition-all duration-500 ease-out"></div>
+                </div>
+
+                <!-- 03 Corporate Comm -->
+                <div class="relative p-6 md:p-10 flex flex-col justify-end overflow-hidden group">
+                    <span class="absolute top-4 right-6 text-7xl md:text-[140px] font-black text-gray-100 leading-none -z-10 select-none learn-num" style="transform: translateY(40px); opacity: 0;">03</span>
+                    <div class="learn-text" style="opacity: 0; transform: translateY(20px);">
+                        <h3 class="text-[#4a0404] font-heading font-black text-2xl md:text-3xl uppercase tracking-widest group-hover:text-[#7f1d1d] transition-colors duration-300">Corp. Comm.</h3>
+                        <p class="text-xs md:text-sm text-gray-500 mt-2 font-sans font-bold tracking-wider uppercase">Articulate with impact</p>
+                    </div>
+                    <div class="absolute bottom-0 left-0 w-0 h-1 bg-[#7f1d1d] group-hover:w-full transition-all duration-500 ease-out"></div>
+                </div>
+
+                <!-- 04 Time Management -->
+                <div class="relative p-6 md:p-10 flex flex-col justify-end overflow-hidden group">
+                    <span class="absolute top-4 right-6 text-7xl md:text-[140px] font-black text-gray-100 leading-none -z-10 select-none learn-num" style="transform: translateY(40px); opacity: 0;">04</span>
+                    <div class="learn-text" style="opacity: 0; transform: translateY(20px);">
+                        <h3 class="text-[#4a0404] font-heading font-black text-2xl md:text-3xl uppercase tracking-widest group-hover:text-[#7f1d1d] transition-colors duration-300">Time Mgmt.</h3>
+                        <p class="text-xs md:text-sm text-gray-500 mt-2 font-sans font-bold tracking-wider uppercase">Optimize every second</p>
+                    </div>
+                    <div class="absolute bottom-0 left-0 w-0 h-1 bg-[#7f1d1d] group-hover:w-full transition-all duration-500 ease-out"></div>
+                </div>
+
+                <!-- 05 Negotiation -->
+                <div class="relative p-6 md:p-10 flex flex-col justify-end overflow-hidden group">
+                    <span class="absolute top-4 right-6 text-7xl md:text-[140px] font-black text-gray-100 leading-none -z-10 select-none learn-num" style="transform: translateY(40px); opacity: 0;">05</span>
+                    <div class="learn-text" style="opacity: 0; transform: translateY(20px);">
+                        <h3 class="text-[#4a0404] font-heading font-black text-2xl md:text-3xl uppercase tracking-widest group-hover:text-[#7f1d1d] transition-colors duration-300">Negotiation</h3>
+                        <p class="text-xs md:text-sm text-gray-500 mt-2 font-sans font-bold tracking-wider uppercase">Drive mutual value</p>
+                    </div>
+                    <div class="absolute bottom-0 left-0 w-0 h-1 bg-[#7f1d1d] group-hover:w-full transition-all duration-500 ease-out"></div>
+                </div>
+
+                <!-- 06 Pitching -->
+                <div class="relative p-6 md:p-10 flex flex-col justify-end overflow-hidden group">
+                    <span class="absolute top-4 right-6 text-7xl md:text-[140px] font-black text-gray-100 leading-none -z-10 select-none learn-num" style="transform: translateY(40px); opacity: 0;">06</span>
+                    <div class="learn-text" style="opacity: 0; transform: translateY(20px);">
+                        <h3 class="text-[#4a0404] font-heading font-black text-2xl md:text-3xl uppercase tracking-widest group-hover:text-[#7f1d1d] transition-colors duration-300">Pitching</h3>
+                        <p class="text-xs md:text-sm text-gray-500 mt-2 font-sans font-bold tracking-wider uppercase">Sell the vision</p>
+                    </div>
+                    <div class="absolute bottom-0 left-0 w-0 h-1 bg-[#7f1d1d] group-hover:w-full transition-all duration-500 ease-out"></div>
+                </div>
+
+                <!-- 07 Diplomacy -->
+                <div class="relative p-6 md:p-10 flex flex-col justify-end overflow-hidden group">
+                    <span class="absolute top-4 right-6 text-7xl md:text-[140px] font-black text-gray-100 leading-none -z-10 select-none learn-num" style="transform: translateY(40px); opacity: 0;">07</span>
+                    <div class="learn-text" style="opacity: 0; transform: translateY(20px);">
+                        <h3 class="text-[#4a0404] font-heading font-black text-2xl md:text-3xl uppercase tracking-widest group-hover:text-[#7f1d1d] transition-colors duration-300">Diplomacy</h3>
+                        <p class="text-xs md:text-sm text-gray-500 mt-2 font-sans font-bold tracking-wider uppercase">Navigate complexities</p>
+                    </div>
+                    <div class="absolute bottom-0 left-0 w-0 h-1 bg-[#7f1d1d] group-hover:w-full transition-all duration-500 ease-out"></div>
+                </div>
+
+                <!-- 08 Operations -->
+                <div class="relative p-6 md:p-10 flex flex-col justify-end overflow-hidden group">
+                    <span class="absolute top-4 right-6 text-7xl md:text-[140px] font-black text-gray-100 leading-none -z-10 select-none learn-num" style="transform: translateY(40px); opacity: 0;">08</span>
+                    <div class="learn-text" style="opacity: 0; transform: translateY(20px);">
+                        <h3 class="text-[#4a0404] font-heading font-black text-2xl md:text-3xl uppercase tracking-widest group-hover:text-[#7f1d1d] transition-colors duration-300">Operations</h3>
+                        <p class="text-xs md:text-sm text-gray-500 mt-2 font-sans font-bold tracking-wider uppercase">Execute with precision</p>
+                    </div>
+                    <div class="absolute bottom-0 left-0 w-0 h-1 bg-[#7f1d1d] group-hover:w-full transition-all duration-500 ease-out"></div>
+                </div>
+
+            </div>
+        </section>
+        
+        <!-- Slide 8: Do you have it in you? — fixed overlay, outside slide system -->
+        
+        <!-- Slide 9: Academics -->
+                <section class="slide overflow-hidden flex flex-col justify-center bg-[#4a0404]" id="slide-9">
+            
+            <!-- Header -->
+            <div class="absolute top-12 left-0 w-full flex flex-col items-center z-50 pointer-events-none acad-header-anim" style="opacity: 0; transform: translateY(-20px);">
+                <h2 class="font-heading text-4xl md:text-6xl font-black text-white uppercase tracking-widest drop-shadow-sm text-center">Academic <span class="text-red-500">Excellence</span></h2>
+                <div class="h-1 bg-white w-16 md:w-24 mt-4 origin-center acad-header-line" style="transform: scaleX(0);"></div>
+            </div>
+
+            <!-- Profiles Container -->
+            <div class="w-full max-w-7xl mx-auto px-8 md:px-16 mt-24 md:mt-32 flex flex-wrap justify-center gap-10 md:gap-16">
+                
+                <!-- Card 1 -->
+                <div class="acad-card flex flex-col items-center relative group" style="opacity: 0; transform: translateY(30px);">
+                    <div class="w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-600 p-1 shadow-[0_0_30px_rgba(253,224,71,0.3)] group-hover:shadow-[0_0_50px_rgba(253,224,71,0.6)] transition-all duration-300">
+                        <div class="w-full h-full rounded-full bg-[#4a0404] flex items-center justify-center overflow-hidden relative">
+                            <img src="Academic%20Pics/Chitraditya.jpeg" alt="Chitraditya Negi" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+                    <!-- Icon badge -->
+                    <div class="absolute top-0 right-0 md:top-2 md:-right-2 bg-yellow-500 rounded-full p-2 shadow-lg z-10" title="Gold Medalist">
+                        <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="currentColor" viewBox="0 0 256 256"><path d="M216,40H192V32a16,16,0,0,0-16-16H80A16,16,0,0,0,64,32v8H40A16,16,0,0,0,24,56V72c0,35.31,23.11,65.34,55.51,77.53A40,40,0,0,0,120,167.36V192H96a8,8,0,0,0-8,8v16H72a8,8,0,0,0,0,16H184a8,8,0,0,0,0-16H168V200a8,8,0,0,0-8-8H136V167.36a40,40,0,0,0,40.49-17.83C208.89,137.34,232,107.31,232,72V56A16,16,0,0,0,216,40ZM40,72V56H64V110.1A64,64,0,0,1,40,72Zm88,80a24,24,0,0,1-24-24V32h48V128A24,24,0,0,1,128,152Zm88-80a64,64,0,0,1-24,38.1V56h24Z"></path></svg>
+                    </div>
+                    <h3 class="mt-6 font-heading font-black text-xl md:text-2xl text-white tracking-widest text-center uppercase">Chitraditya<br>Negi</h3>
+                    <p class="mt-2 font-sans font-bold text-yellow-500 tracking-wider text-sm md:text-base uppercase">Gold Medalist</p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="acad-card flex flex-col items-center relative group" style="opacity: 0; transform: translateY(30px);">
+                    <div class="w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-600 p-1 shadow-[0_0_30px_rgba(253,224,71,0.3)] group-hover:shadow-[0_0_50px_rgba(253,224,71,0.6)] transition-all duration-300">
+                        <div class="w-full h-full rounded-full bg-[#4a0404] flex items-center justify-center overflow-hidden relative">
+                            <img src="Academic%20Pics/Akshat%20Shukla.jpeg" alt="Akshat Shukla" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+                    <div class="absolute top-0 right-0 md:top-2 md:-right-2 bg-yellow-500 rounded-full p-2 shadow-lg z-10" title="Gold Medalist">
+                        <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="currentColor" viewBox="0 0 256 256"><path d="M216,40H192V32a16,16,0,0,0-16-16H80A16,16,0,0,0,64,32v8H40A16,16,0,0,0,24,56V72c0,35.31,23.11,65.34,55.51,77.53A40,40,0,0,0,120,167.36V192H96a8,8,0,0,0-8,8v16H72a8,8,0,0,0,0,16H184a8,8,0,0,0,0-16H168V200a8,8,0,0,0-8-8H136V167.36a40,40,0,0,0,40.49-17.83C208.89,137.34,232,107.31,232,72V56A16,16,0,0,0,216,40ZM40,72V56H64V110.1A64,64,0,0,1,40,72Zm88,80a24,24,0,0,1-24-24V32h48V128A24,24,0,0,1,128,152Zm88-80a64,64,0,0,1-24,38.1V56h24Z"></path></svg>
+                    </div>
+                    <h3 class="mt-6 font-heading font-black text-xl md:text-2xl text-white tracking-widest text-center uppercase">Akshat<br>Shukla</h3>
+                    <p class="mt-2 font-sans font-bold text-yellow-500 tracking-wider text-sm md:text-base uppercase">Gold Medalist</p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="acad-card flex flex-col items-center relative group" style="opacity: 0; transform: translateY(30px);">
+                    <div class="w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-600 p-1 shadow-[0_0_30px_rgba(253,224,71,0.3)] group-hover:shadow-[0_0_50px_rgba(253,224,71,0.6)] transition-all duration-300">
+                        <div class="w-full h-full rounded-full bg-[#4a0404] flex items-center justify-center overflow-hidden relative">
+                            <img src="Academic%20Pics/ANushka%20Dahiya.jpeg" alt="Anushka Dahiya" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+                    <div class="absolute top-0 right-0 md:top-2 md:-right-2 bg-yellow-500 rounded-full p-2 shadow-lg z-10" title="Gold Medalist">
+                        <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="currentColor" viewBox="0 0 256 256"><path d="M216,40H192V32a16,16,0,0,0-16-16H80A16,16,0,0,0,64,32v8H40A16,16,0,0,0,24,56V72c0,35.31,23.11,65.34,55.51,77.53A40,40,0,0,0,120,167.36V192H96a8,8,0,0,0-8,8v16H72a8,8,0,0,0,0,16H184a8,8,0,0,0,0-16H168V200a8,8,0,0,0-8-8H136V167.36a40,40,0,0,0,40.49-17.83C208.89,137.34,232,107.31,232,72V56A16,16,0,0,0,216,40ZM40,72V56H64V110.1A64,64,0,0,1,40,72Zm88,80a24,24,0,0,1-24-24V32h48V128A24,24,0,0,1,128,152Zm88-80a64,64,0,0,1-24,38.1V56h24Z"></path></svg>
+                    </div>
+                    <h3 class="mt-6 font-heading font-black text-xl md:text-2xl text-white tracking-widest text-center uppercase">Anushka<br>Dahiya</h3>
+                    <p class="mt-2 font-sans font-bold text-yellow-500 tracking-wider text-sm md:text-base uppercase">Gold Medalist</p>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="acad-card flex flex-col items-center relative group" style="opacity: 0; transform: translateY(30px);">
+                    <div class="w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-gray-300 to-gray-500 p-1 shadow-[0_0_30px_rgba(156,163,175,0.3)] group-hover:shadow-[0_0_50px_rgba(156,163,175,0.6)] transition-all duration-300">
+                        <div class="w-full h-full rounded-full bg-[#4a0404] flex items-center justify-center overflow-hidden relative">
+                            <img src="Academic%20Pics/Yatin.jpeg" alt="Yatin Mahindroo" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+                    <div class="absolute top-0 right-0 md:top-2 md:-right-2 bg-gray-400 rounded-full p-2 shadow-lg z-10" title="Silver Medalist">
+                        <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="currentColor" viewBox="0 0 256 256"><path d="M216,40H192V32a16,16,0,0,0-16-16H80A16,16,0,0,0,64,32v8H40A16,16,0,0,0,24,56V72c0,35.31,23.11,65.34,55.51,77.53A40,40,0,0,0,120,167.36V192H96a8,8,0,0,0-8,8v16H72a8,8,0,0,0,0,16H184a8,8,0,0,0,0-16H168V200a8,8,0,0,0-8-8H136V167.36a40,40,0,0,0,40.49-17.83C208.89,137.34,232,107.31,232,72V56A16,16,0,0,0,216,40ZM40,72V56H64V110.1A64,64,0,0,1,40,72Zm88,80a24,24,0,0,1-24-24V32h48V128A24,24,0,0,1,128,152Zm88-80a64,64,0,0,1-24,38.1V56h24Z"></path></svg>
+                    </div>
+                    <h3 class="mt-6 font-heading font-black text-xl md:text-2xl text-white tracking-widest text-center uppercase">Yatin<br>Mahindroo</h3>
+                    <p class="mt-2 font-sans font-bold text-gray-300 tracking-wider text-sm md:text-base uppercase">Silver Medalist</p>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="acad-card flex flex-col items-center relative group" style="opacity: 0; transform: translateY(30px);">
+                    <div class="w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-blue-300 to-blue-600 p-1 shadow-[0_0_30px_rgba(59,130,246,0.3)] group-hover:shadow-[0_0_50px_rgba(59,130,246,0.6)] transition-all duration-300">
+                        <div class="w-full h-full rounded-full bg-[#4a0404] flex items-center justify-center overflow-hidden relative">
+                            <img src="Academic%20Pics/Aditya%20Manik.jpeg" alt="Aditya Manik" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+                    <div class="absolute top-0 right-0 md:top-2 md:-right-2 bg-blue-500 rounded-full p-2 shadow-lg z-10" title="Dean's Merit List">
+                        <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="currentColor" viewBox="0 0 256 256"><path d="M224,112a96,96,0,1,0-112,94.65V240a8,8,0,0,0,12.22,6.78L156,226.54l31.78,20.24A8,8,0,0,0,200,240V206.65A96.2,96.2,0,0,0,224,112Zm-40,84.4-19.78-12.6A8,8,0,0,0,156,184l-19.78,12.6V187.52a95.3,95.3,0,0,0,47.78,0ZM128,192a80,80,0,1,1,80-80A80.09,80.09,0,0,1,128,192Zm24-80a24,24,0,1,1-24-24A24,24,0,0,1,152,112Z"></path></svg>
+                    </div>
+                    <h3 class="mt-6 font-heading font-black text-xl md:text-2xl text-white tracking-widest text-center uppercase">Aditya<br>Manik</h3>
+                    <p class="mt-2 font-sans font-bold text-blue-400 tracking-wider text-sm md:text-base uppercase">Dean's Merit List</p>
+                </div>
+
+            </div>
+            
+            <div class="absolute bottom-12 right-12 md:bottom-16 md:right-24 z-50 acad-more" style="opacity: 0;">
+                <h3 class="font-heading text-2xl md:text-3xl font-black text-white/50 tracking-widest uppercase italic">& many more...</h3>
+            </div>
+        </section>
+
+<!-- Slide 9: Do you have it in you? — fixed overlay, outside slide system -->
+        <div id="slide-9-overlay" style="
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: #ffffff;
+            overflow: hidden;
+            align-items: center;
+            justify-content: center;
+        ">
+            <!-- Classy Background Words Pattern -->
+            <div style="position:absolute; inset:0; display: flex; flex-direction: column; justify-content: space-between; pointer-events:none; opacity: 0.03; padding: 4rem 0;">
+                <div style="display: flex; gap: 4rem; white-space: nowrap; font-family:'Outfit',sans-serif; font-weight: 800; font-size: 4rem; color: #7f1d1d; text-transform: uppercase; width: 200%; transform: translateX(-10%);">
+                    <span>TEAM PLAYER</span><span>CONFIDENCE</span><span>INTEGRITY</span><span>PERSEVERANCE</span><span>PROACTIVENESS</span><span>RESILIENCE</span>
+                    <span>TEAM PLAYER</span><span>CONFIDENCE</span><span>INTEGRITY</span><span>PERSEVERANCE</span><span>PROACTIVENESS</span><span>RESILIENCE</span>
+                </div>
+                <div style="display: flex; gap: 4rem; white-space: nowrap; font-family:'Outfit',sans-serif; font-weight: 800; font-size: 4rem; color: #7f1d1d; text-transform: uppercase; width: 200%; transform: translateX(-5%);">
+                    <span>PROACTIVENESS</span><span>RESILIENCE</span><span>TEAM PLAYER</span><span>CONFIDENCE</span><span>INTEGRITY</span><span>PERSEVERANCE</span>
+                    <span>PROACTIVENESS</span><span>RESILIENCE</span><span>TEAM PLAYER</span><span>CONFIDENCE</span><span>INTEGRITY</span><span>PERSEVERANCE</span>
+                </div>
+                <div style="display: flex; gap: 4rem; white-space: nowrap; font-family:'Outfit',sans-serif; font-weight: 800; font-size: 4rem; color: #7f1d1d; text-transform: uppercase; width: 200%; transform: translateX(-15%);">
+                    <span>INTEGRITY</span><span>PERSEVERANCE</span><span>PROACTIVENESS</span><span>RESILIENCE</span><span>TEAM PLAYER</span><span>CONFIDENCE</span>
+                    <span>INTEGRITY</span><span>PERSEVERANCE</span><span>PROACTIVENESS</span><span>RESILIENCE</span><span>TEAM PLAYER</span><span>CONFIDENCE</span>
+                </div>
+                <div style="display: flex; gap: 4rem; white-space: nowrap; font-family:'Outfit',sans-serif; font-weight: 800; font-size: 4rem; color: #7f1d1d; text-transform: uppercase; width: 200%; transform: translateX(-2%);">
+                    <span>CONFIDENCE</span><span>INTEGRITY</span><span>PERSEVERANCE</span><span>PROACTIVENESS</span><span>RESILIENCE</span><span>TEAM PLAYER</span>
+                    <span>CONFIDENCE</span><span>INTEGRITY</span><span>PERSEVERANCE</span><span>PROACTIVENESS</span><span>RESILIENCE</span><span>TEAM PLAYER</span>
+                </div>
+                <div style="display: flex; gap: 4rem; white-space: nowrap; font-family:'Outfit',sans-serif; font-weight: 800; font-size: 4rem; color: #7f1d1d; text-transform: uppercase; width: 200%; transform: translateX(-20%);">
+                    <span>RESILIENCE</span><span>TEAM PLAYER</span><span>CONFIDENCE</span><span>INTEGRITY</span><span>PERSEVERANCE</span><span>PROACTIVENESS</span>
+                    <span>RESILIENCE</span><span>TEAM PLAYER</span><span>CONFIDENCE</span><span>INTEGRITY</span><span>PERSEVERANCE</span><span>PROACTIVENESS</span>
+                </div>
+            </div>
+
+            <!-- Soft vignette to keep focus centered -->
+            <div style="position:absolute; inset:0; background: radial-gradient(circle at 50% 50%, transparent 40%, #ffffff 100%); pointer-events: none;"></div>
+
+            <!-- Main Content Container (Classy & Minimal) -->
+            <div style="position:relative; z-index:10; text-align: center; display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 1200px; padding: 0 2rem;">
+                
+                <p id="s9-label" style="opacity:0; font-family:'Outfit', sans-serif; font-size: 1.125rem; font-weight: 700; color: #7f1d1d; letter-spacing: 0.3em; text-transform: uppercase; margin-bottom: 3rem;">Do you have it in you?</p>
+
+                <h3 id="s9-line1" style="opacity:0; font-family:'Outfit', sans-serif; font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 400; color: #4a0404; margin: 0 0 0.5rem 0; letter-spacing: -0.02em;">If doing the bare minimum</h3>
+                
+                <h1 id="s9-line2" style="opacity:0; font-family:'Outfit', sans-serif; font-size: clamp(4rem, 7vw, 7.5rem); font-weight: 900; color: #4a0404; text-transform: uppercase; line-height: 1.05; margin: 0 0 4rem 0; letter-spacing: -0.03em;">Has Never Been<br>Your Thing</h1>
+
+                <div id="s9-same" style="opacity:0; display: inline-block;">
+                    <h2 style="font-family:'Outfit', sans-serif; font-size: clamp(2.5rem, 4vw, 4rem); font-weight: 800; color: #7f1d1d; margin: 0; text-transform: uppercase; letter-spacing: 0.1em; position: relative;">
+                        SAME.
+                        <div style="position: absolute; bottom: -10px; left: 0; width: 100%; height: 4px; background: #7f1d1d;"></div>
+                    </h2>
+                </div>
+
+            </div>
+        </div>
+
+
+
+        <!-- Slide 10: Culture & Memories -->
+                <!-- Slide 10: Endless Fun -->
+        <section class="slide flex flex-col justify-center bg-celebration overflow-hidden" id="slide-10">
+            <style>
+                .bg-celebration {
+                    background-color: #4a0404; /* Dark Maroon */
+                    background-image: radial-gradient(circle at center, #6b0f0f 0%, #4a0404 100%);
+                }
+
+                .fun-marquee {
+                    display: flex;
+                    overflow: visible;
+                    white-space: nowrap;
+                    width: 100vw;
+                    position: relative;
+                    padding: 40px 0; /* More padding for chaotic rotations */
+                }
+                .fun-marquee-content {
+                    display: flex;
+                    flex-shrink: 0;
+                    justify-content: space-around;
+                    align-items: center;
+                    gap: 40px;
+                    min-width: 100%;
+                    padding-right: 40px;
+                }
+                .scroll-left { animation: scrollLeft 45s linear infinite; }
+                .scroll-right { animation: scrollRight 45s linear infinite; }
+                .fun-marquee:hover .fun-marquee-content { animation-play-state: paused; }
+
+                @keyframes scrollLeft {
+                    from { transform: translateX(0); }
+                    to { transform: translateX(-100%); }
+                }
+                @keyframes scrollRight {
+                    from { transform: translateX(-100%); }
+                    to { transform: translateX(0); }
+                }
+
+                .fun-item {
+                    width: 280px;
+                    height: 220px;
+                    border-radius: 4px;
+                    overflow: hidden;
+                    position: relative;
+                    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, z-index 0s;
+                    cursor: pointer;
+                    box-shadow: 5px 15px 25px rgba(0,0,0,0.6);
+                    flex-shrink: 0;
+                    background: white;
+                    padding: 10px 10px 30px 10px; /* Polaroid look */
+                }
+                
+                /* Chaotic, fun rotations */
+                .fun-item:nth-child(2n) { transform: rotate(4deg) translateY(-10px); }
+                .fun-item:nth-child(3n) { transform: rotate(-5deg) translateY(15px); }
+                .fun-item:nth-child(4n) { transform: rotate(7deg) translateY(5px); }
+                .fun-item:nth-child(5n) { transform: rotate(-7deg) translateY(-15px); }
+                .fun-item:nth-child(7n) { transform: rotate(9deg) translateY(20px); }
+
+                .fun-item.quote-card {
+                    background: #ffde59; /* Sticky note yellow */
+                    padding: 20px;
+                    border: none;
+                    box-shadow: 2px 8px 15px rgba(0,0,0,0.5);
+                    border-radius: 0 0 20px 0; /* Slightly folded corner look */
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    text-align: center;
+                    transform: rotate(-10deg) !important; /* Force crazy rotation */
+                }
+                .fun-item.quote-card:nth-child(even) {
+                    background: #ff5757; /* Crazy red */
+                    transform: rotate(12deg) !important;
+                }
+
+                .fun-item:hover {
+                    transform: scale(1.6) rotate(0deg) !important;
+                    z-index: 50;
+                    box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+                }
+                .fun-item img, .fun-item video {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
+                
+                @media (max-width: 768px) {
+                    .fun-item {
+                        width: 200px;
+                        height: 140px;
+                    }
+                }
+            </style>
+
+            <div class="absolute top-12 left-0 w-full flex flex-col items-center z-50 pointer-events-none fun-header-anim" style="opacity: 0; transform: translateY(-30px);">
+                <h2 class="font-heading text-4xl md:text-6xl font-black text-white uppercase tracking-widest drop-shadow-[0_0_20px_rgba(255,255,255,0.5)] text-center px-4">WORK HARDER, PARTY HARDER, <span class="text-yellow-400">BOND FOR LIFE</span></h2>
+                <div class="h-2 bg-yellow-400 w-48 mt-4 rounded-full shadow-[0_0_15px_rgba(250,204,21,1)] fun-header-line" style="transform: scaleX(0);"></div>
+            </div>
+
+            <div class="w-full mt-24 md:mt-32 flex flex-col gap-4 fun-rows-anim" style="opacity: 0;">
+                
+                <!-- ROW 1 (Left) -->
+                <div class="fun-marquee">
+                    <div class="fun-marquee-content scroll-left">
+                        <!-- Items -->
+                        <div class="fun-item"><img src="Culture/20260201_162024.jpg" alt="Culture"></div>
+                        <div class="fun-item quote-card"><h3 class="font-heading text-2xl font-bold text-white drop-shadow-md">WORK HARD,<br>PARTY HARDEST</h3></div>
+                        <div class="fun-item"><img src="Culture/20260201_235745.jpg" alt="Culture"></div>
+                        <div class="fun-item"><img src="Culture/20260201_235844.jpg" alt="Culture"></div>
+                        <div class="fun-item"><img src="Culture/IMG20251223032657.jpg" alt="Culture"></div>
+                        <div class="fun-item quote-card"><h3 class="font-heading text-2xl font-bold text-yellow-300 drop-shadow-md">CELEBRATE<br>EVERY WIN!</h3></div>
+                        <div class="fun-item"><img src="Culture/IMG_20251223_031932648.jpg" alt="Culture"></div>
+                        <div class="fun-item"><img src="Culture/IMG_2089.jpg" alt="Culture"></div>
+                        <div class="fun-item"><img src="Culture/IMG_3797.jpg" alt="Culture"></div>
+                        <div class="fun-item"><img src="Culture/IMG_4918.jpg" alt="Culture"></div>
+                        <div class="fun-item quote-card"><h3 class="font-heading text-3xl font-black text-pink-300 drop-shadow-md">LEGACY</h3></div>
+                        <div class="fun-item"><img src="Culture/IMG_4958.jpg" alt="Culture"></div>
+                    </div>
+                    <!-- Duplicate for infinite scroll -->
+                    <div class="fun-marquee-content scroll-left">
+                        <div class="fun-item"><img src="Culture/20260201_162024.jpg" alt="Culture"></div>
+                        <div class="fun-item quote-card"><h3 class="font-heading text-2xl font-bold text-white drop-shadow-md">WORK HARD,<br>PARTY HARDEST</h3></div>
+                        <div class="fun-item"><img src="Culture/20260201_235745.jpg" alt="Culture"></div>
+                        <div class="fun-item"><img src="Culture/20260201_235844.jpg" alt="Culture"></div>
+                        <div class="fun-item"><img src="Culture/IMG20251223032657.jpg" alt="Culture"></div>
+                        <div class="fun-item quote-card"><h3 class="font-heading text-2xl font-bold text-yellow-300 drop-shadow-md">CELEBRATE<br>EVERY WIN!</h3></div>
+                        <div class="fun-item"><img src="Culture/IMG_20251223_031932648.jpg" alt="Culture"></div>
+                        <div class="fun-item"><img src="Culture/IMG_2089.jpg" alt="Culture"></div>
+                        <div class="fun-item"><img src="Culture/IMG_3797.jpg" alt="Culture"></div>
+                        <div class="fun-item"><img src="Culture/IMG_4918.jpg" alt="Culture"></div>
+                        <div class="fun-item quote-card"><h3 class="font-heading text-3xl font-black text-pink-300 drop-shadow-md">LEGACY</h3></div>
+                        <div class="fun-item"><img src="Culture/IMG_4958.jpg" alt="Culture"></div>
+                    </div>
+                </div>
+
+                <!-- ROW 2 (Right) -->
+                <div class="fun-marquee">
+                    <div class="fun-marquee-content scroll-right">
+                        <div class="fun-item"><img src="Culture/IMG_5745.JPG" alt="Culture"></div>
+                        <div class="fun-item quote-card"><h3 class="font-heading text-3xl font-black text-white drop-shadow-md">UNBREAKABLE</h3></div>
+                        <div class="fun-item"><img src="Culture/IMG_6907.jpg" alt="Culture"></div>
+                        <div class="fun-item"><img src="Culture/IMG_8074.jpg" alt="Culture"></div>
+                        <div class="fun-item"><img src="Culture/IMG_8083.jpg" alt="Culture"></div>
+                        <div class="fun-item"><img src="Culture/IMG_8094.jpg" alt="Culture"></div>
+                        <div class="fun-item quote-card"><h3 class="font-heading text-2xl font-bold text-yellow-200 drop-shadow-md">MEMORIES<br>FOR LIFE</h3></div>
+                        <div class="fun-item"><img src="Culture/WhatsApp%20Image%202026-06-29%20at%2015.35.19.jpeg" alt="Culture"></div>
+                        <div class="fun-item"><img src="Culture/WhatsApp%20Image%202026-06-29%20at%2015.35.20.jpeg" alt="Culture"></div>
+                        <div class="fun-item"><img src="Culture/WhatsApp%20Image%202026-06-29%20at%2015.35.23%20%281%29.jpeg" alt="Culture"></div>
+                        <div class="fun-item"><img src="Culture/WhatsApp%20Image%202026-06-29%20at%2015.35.23.jpeg" alt="Culture"></div>
+                    </div>
+                    <!-- Duplicate for infinite scroll -->
+                    <div class="fun-marquee-content scroll-right">
+                        <div class="fun-item"><img src="Culture/IMG_5745.JPG" alt="Culture"></div>
+                        <div class="fun-item quote-card"><h3 class="font-heading text-3xl font-black text-white drop-shadow-md">UNBREAKABLE</h3></div>
+                        <div class="fun-item"><img src="Culture/IMG_6907.jpg" alt="Culture"></div>
+                        <div class="fun-item"><img src="Culture/IMG_8074.jpg" alt="Culture"></div>
+                        <div class="fun-item"><img src="Culture/IMG_8083.jpg" alt="Culture"></div>
+                        <div class="fun-item"><img src="Culture/IMG_8094.jpg" alt="Culture"></div>
+                        <div class="fun-item quote-card"><h3 class="font-heading text-2xl font-bold text-yellow-200 drop-shadow-md">MEMORIES<br>FOR LIFE</h3></div>
+                        <div class="fun-item"><img src="Culture/WhatsApp%20Image%202026-06-29%20at%2015.35.19.jpeg" alt="Culture"></div>
+                        <div class="fun-item"><img src="Culture/WhatsApp%20Image%202026-06-29%20at%2015.35.20.jpeg" alt="Culture"></div>
+                        <div class="fun-item"><img src="Culture/WhatsApp%20Image%202026-06-29%20at%2015.35.23%20%281%29.jpeg" alt="Culture"></div>
+                        <div class="fun-item"><img src="Culture/WhatsApp%20Image%202026-06-29%20at%2015.35.23.jpeg" alt="Culture"></div>
+                    </div>
+                </div>
+
+                <!-- ROW 3 (Left) -->
+                <div class="fun-marquee">
+                    <div class="fun-marquee-content scroll-left">
+                        <div class="fun-item"><img src="Culture/WhatsApp%20Image%202026-06-29%20at%2015.35.25%20%281%29.jpeg" alt="Culture"></div>
+                        <div class="fun-item"><img src="Culture/WhatsApp%20Image%202026-06-29%20at%2015.35.25.jpeg" alt="Culture"></div>
+                        <div class="fun-item"><img src="Culture/WhatsApp%20Image%202026-06-29%20at%2015.35.27.jpeg" alt="Culture"></div>
+                        <div class="fun-item quote-card"><h3 class="font-heading text-2xl font-bold text-white drop-shadow-md">THE BEST<br>TEAM</h3></div>
+                        <div class="fun-item"><img src="Culture/WhatsApp%20Image%202026-06-29%20at%2015.37.08.jpeg" alt="Culture"></div>
+                        <div class="fun-item"><img src="Culture/WhatsApp%20Image%202026-06-29%20at%2015.37.33.jpeg" alt="Culture"></div>
+                        <div class="fun-item"><img src="Culture/WhatsApp%20Image%202026-06-29%20at%2015.37.49.jpeg" alt="Culture"></div>
+                        <div class="fun-item quote-card"><h3 class="font-heading text-2xl font-bold text-yellow-300 drop-shadow-md">BONDS<br>FOR LIFE</h3></div>
+                        <div class="fun-item"><img src="Culture/WhatsApp%20Image%202026-06-29%20at%2015.44.31.jpeg" alt="Culture"></div>
+                        <div class="fun-item"><img src="Culture/WhatsApp%20Image%202026-06-29%20at%2015.45.00.jpeg" alt="Culture"></div>
+                        <div class="fun-item"><video src="Culture/20260201_161927.mp4" autoplay loop muted playsinline></video></div>
+                    </div>
+                    <!-- Duplicate for infinite scroll -->
+                    <div class="fun-marquee-content scroll-left">
+                        <div class="fun-item"><img src="Culture/WhatsApp%20Image%202026-06-29%20at%2015.35.25%20%281%29.jpeg" alt="Culture"></div>
+                        <div class="fun-item"><img src="Culture/WhatsApp%20Image%202026-06-29%20at%2015.35.25.jpeg" alt="Culture"></div>
+                        <div class="fun-item"><img src="Culture/WhatsApp%20Image%202026-06-29%20at%2015.35.27.jpeg" alt="Culture"></div>
+                        <div class="fun-item quote-card"><h3 class="font-heading text-2xl font-bold text-white drop-shadow-md">THE BEST<br>TEAM</h3></div>
+                        <div class="fun-item"><img src="Culture/WhatsApp%20Image%202026-06-29%20at%2015.37.08.jpeg" alt="Culture"></div>
+                        <div class="fun-item"><img src="Culture/WhatsApp%20Image%202026-06-29%20at%2015.37.33.jpeg" alt="Culture"></div>
+                        <div class="fun-item"><img src="Culture/WhatsApp%20Image%202026-06-29%20at%2015.37.49.jpeg" alt="Culture"></div>
+                        <div class="fun-item quote-card"><h3 class="font-heading text-2xl font-bold text-yellow-300 drop-shadow-md">BONDS<br>FOR LIFE</h3></div>
+                        <div class="fun-item"><img src="Culture/WhatsApp%20Image%202026-06-29%20at%2015.44.31.jpeg" alt="Culture"></div>
+                        <div class="fun-item"><img src="Culture/WhatsApp%20Image%202026-06-29%20at%2015.45.00.jpeg" alt="Culture"></div>
+                        <div class="fun-item"><video src="Culture/20260201_161927.mp4" autoplay loop muted playsinline></video></div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Slide 11: Finale -->
+        <section class="slide flex flex-col bg-black overflow-hidden relative" id="slide-11">
+            <div class="h-[65vh] w-full relative overflow-hidden bg-black flex items-center justify-center p-4">
+                <img src="Culture/IMG_5745.JPG" alt="The Best Team" class="w-full h-full object-contain" id="finale-img" />
+            </div>
+            <div class="h-[35vh] w-full bg-[#4a0404] flex flex-col items-center justify-center px-6 text-center z-10 shadow-[0_-15px_30px_rgba(0,0,0,0.6)]">
+                <h1 class="font-heading text-3xl md:text-5xl lg:text-6xl font-black text-white uppercase tracking-widest leading-tight" id="finale-text-1" style="opacity: 0; transform: translateY(20px);">
+                    The Best Version of You Has Been Waiting.
+                </h1>
+                <div class="h-1 bg-white w-24 mt-4 mb-4 rounded-full opacity-60" id="finale-line" style="transform: scaleX(0);"></div>
+                <h2 class="font-heading text-2xl md:text-4xl lg:text-5xl font-bold text-gray-200 uppercase tracking-widest" id="finale-text-2" style="opacity: 0; transform: translateY(20px);">
+                    We Open the Door.
+                </h2>
+            </div>
+        </section>
+
+        <!-- White flash overlay for the transition (Global) -->
+        <div id="drive-flash" style="position:fixed;inset:0;background-color:white;z-index:9999;pointer-events:none;opacity:0;"></div>
+    </main>
+
+    <!-- App Logic -->
+    <script>
+
+        // Slide Management
+        const slides = document.querySelectorAll('.slide');
+        let currentSlide = 0;
+        let isAnimating = false;
+        
+        // Setup GSAP Timelines for each slide
+        const timelines = [];
+
+        // Timeline 0: Placement Committee
+        const tl0 = gsap.timeline({ paused: true });
+        timelines.push(tl0); // Empty for now, handles its own exit in transitionToSlide
+
+        // Timeline 1: Welcome to IIM Rohtak
+        const tl1 = gsap.timeline({ paused: true });
+        
+        // Initial setup for Slide 1 elements
+        gsap.set('.elegant-text', { y: 150, opacity: 0, scale: 0.95 });
+        gsap.set('.elegant-sub', { opacity: 0, y: 20 });
+        
+        // Slam in the "Welcome to IIM Rohtak" text
+        tl1.to('.elegant-text', {
+            y: 0,
+            opacity: 1,
+            scale: 1,
+            duration: 1.8,
+            stagger: 0.25,
+            ease: "expo.out"
+        }, 0.5)
+        .to('.elegant-line', {
+            width: "200px",
+            duration: 1.5,
+            ease: "power3.inOut"
+        }, 0.8)
+        .to('.elegant-sub', {
+            opacity: 0.5,
+            y: 0,
+            duration: 2,
+            ease: "power2.out"
+        }, 1.0);
+        
+        timelines.push(tl1);
+
+        // Timeline 2: Why Join — overlay card revealed by the morph transition (or instantly on direct nav)
+        const tl2 = gsap.timeline({ paused: true });
+        // Initially hide the card; the Slide1→2 transition slides it in.
+        // tl2 ensures it's visible for any other navigation path.
+        gsap.set('#why-overlay-card', { opacity: 0, y: -30 });
+        tl2.to('#why-overlay-card', { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' });
+        timelines.push(tl2);
+
+        // Timeline 3: Who Are We
+        const tl3 = gsap.timeline({ paused: true });
+        // Removed the fromTo animation for #who-are-we-text to guarantee it is visible instantly
+        timelines.push(tl3);
+
+        // Timeline 4: Team & Corporate Partners
+        const tl4 = gsap.timeline({ paused: true });
+        // 1. 3D Floating Logos reveal
+        tl4.to('#company-logos-wall', {
+            opacity: 1,
+            scale: 1,
+            duration: 2,
+            ease: "power2.out"
+        }, 0);
+
+        // Continuous subtle float for logos
+        tl4.to('.company-logo', {
+            y: "+=30",
+            rotationX: "+=10",
+            rotationY: "-=10",
+            duration: 4,
+            yoyo: true,
+            repeat: -1,
+            ease: "sine.inOut",
+            stagger: { amount: 2, from: "random" }
+        }, 1.5);
+
+        timelines.push(tl4);
+        
+        const tl5 = gsap.timeline({ paused: true });
+        timelines.push(tl5);
+
+        // 1. Reveal Title
+        tl5.fromTo('#achievements-title', 
+            { opacity: 0, y: -30, filter: "blur(8px)" },
+            { opacity: 1, y: 0, filter: "blur(0px)", duration: 1.2, ease: "power3.out" }, 
+            0
+        );
+
+        // 2. Elegant Cascade Cards
+        const tl5Cards = document.querySelectorAll('#slide-5 .achievement-card');
+        
+        tl5Cards.forEach((card, index) => {
+            const startTime = 0.4 + (index * 0.15); // Stagger of 0.15s
+            
+            // Soft landing and fade in
+            tl5.fromTo(card,
+                { opacity: 0, y: 40, scale: 0.95 },
+                { opacity: 1, y: 0, scale: 1, duration: 1, ease: "power3.out" },
+                startTime
+            );
+            
+            // The top border line "powering up" the card
+            const borderLine = card.querySelector('.bg-\\[\\#7f1d1d\\]'); 
+            if (borderLine) {
+                // temporarily disable the CSS transition so GSAP can control it for the intro
+                tl5.set(borderLine, { transition: "none" }, 0);
+                tl5.fromTo(borderLine,
+                    { scaleX: 0, transformOrigin: "left" },
+                    { scaleX: 1, duration: 0.8, ease: "expo.out" },
+                    startTime + 0.2
+                );
+                // restore transition for hover effect after animation
+                tl5.set(borderLine, { clearProps: "transition" }, startTime + 1);
+            }
+            
+            // Number counter ticking
+            const counter = card.querySelector('.counter');
+            if (counter) {
+                const target = parseFloat(counter.getAttribute('data-target'));
+                const decimals = parseInt(counter.getAttribute('data-decimals') || '0');
+                
+                tl5.fromTo(counter,
+                    { innerHTML: 0 },
+                    {
+                        innerHTML: target,
+                        duration: 1.5,
+                        ease: "power2.out",
+                        snap: { innerHTML: Math.pow(10, -decimals) },
+                        onUpdate: function() {
+                            const val = Number(this.targets()[0].innerHTML);
+                            this.targets()[0].innerHTML = decimals > 0 ? val.toFixed(decimals) : Math.round(val);
+                        }
+                    },
+                    startTime + 0.3
+                );
+            }
+            
+            // A subtle shadow bloom to give it a premium glow
+            tl5.fromTo(card,
+                { boxShadow: "0 0 0px 0px rgba(127,29,29,0)" },
+                { boxShadow: "0 20px 40px -10px rgba(127,29,29,0.15)", duration: 1.5, ease: "power2.out" },
+                startTime + 0.2
+            );
+        });
+
+        // Timeline 6: Roles & Responsibilities Thread Animation
+        const tl6 = gsap.timeline({ paused: true });
+        
+        // Init SVG lengths
+        tl6.call(() => {
+            document.querySelectorAll('.role-path').forEach((path, i) => {
+                const len = path.getTotalLength();
+                gsap.set(path, { strokeDasharray: len, strokeDashoffset: i === 0 ? len : len, opacity: i === 0 ? 1 : 0 });
+            });
+        }, null, 0);
+
+        // Animate Header
+        tl6.fromTo('#roles-header', { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.8, ease: 'power3.out' }, 0);
+        tl6.fromTo('#roles-header-line', { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: 'expo.out' }, 0.2);
+        
+        // Draw first path
+        tl6.to(document.querySelectorAll('.role-path')[0], { strokeDashoffset: 0, duration: 2, ease: 'power2.inOut' }, 0.5);
+        
+        // Fade in first text
+        tl6.fromTo(document.querySelectorAll('.role-text-card')[0], { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, 0.5);
+        
+        function goToPitch(index) {
+            if (isAnimating) return;
+            isAnimating = true;
+
+            const currentPath = document.querySelectorAll('.role-path')[pitchIndex];
+            const nextPath = document.querySelectorAll('.role-path')[index];
+            const currentCard = document.querySelectorAll('.role-text-card')[pitchIndex];
+            const nextCard = document.querySelectorAll('.role-text-card')[index];
+
+            // "Undraw" current SVG
+            if (currentPath) {
+                const currentLen = currentPath.getTotalLength();
+                gsap.to(currentPath, { strokeDashoffset: currentLen, duration: 1, ease: 'power2.inOut', onComplete: () => {
+                    gsap.set(currentPath, { opacity: 0 });
+                }});
+            }
+
+            // Fade out current text
+            if (currentCard) {
+                gsap.to(currentCard, { opacity: 0, y: -20, duration: 0.6, ease: 'power2.in' });
+            }
+
+            // "Draw" next SVG and fade in next text
+            setTimeout(() => {
+                if (nextPath) {
+                    gsap.set(nextPath, { opacity: 1 });
+                    gsap.fromTo(nextPath, { strokeDashoffset: nextPath.getTotalLength() }, { strokeDashoffset: 0, duration: 1.5, ease: 'power2.inOut' });
+                }
+                if (nextCard) {
+                    gsap.fromTo(nextCard, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' });
+                }
+                pitchIndex = index;
+                setTimeout(() => { isAnimating = false; }, 800);
+            }, 600);
+        }
+
+        function goToWhy(index) {
+            if (isAnimating) return;
+            isAnimating = true;
+
+            const oldSlide = document.querySelectorAll('.why-sub-slide')[whyIndex];
+            const nextSlide = document.querySelectorAll('.why-sub-slide')[index];
+            const direction = index > whyIndex ? 1 : -1;
+
+            // Prepare next slide position (off-screen)
+            gsap.set(nextSlide, { x: direction > 0 ? '100%' : '-100%', zIndex: 10 });
+            gsap.set(oldSlide, { zIndex: 5 });
+
+            // Hide old text quickly (optional, or just let it slide with the container)
+            // Actually, for a standard carousel, text moves with the slide. 
+            // So we don't need to animate text opacity separately, it just rides the slide!
+
+            gsap.to(oldSlide, { x: direction > 0 ? '-100%' : '100%', duration: 1.0, ease: 'power3.inOut' });
+            gsap.to(nextSlide, { x: '0%', duration: 1.0, ease: 'power3.inOut', onComplete: () => {
+                whyIndex = index;
+                isAnimating = false;
+            }});
+        }
+        
+        timelines.push(tl6);
+
+        // ─── Dedicated direct navigation to Final Overlay ──
+        function showEndOverlay() {
+            const overlay = document.getElementById('slide-9-overlay');
+
+            // Reset overlay content
+            gsap.set('#s9-label', { opacity: 0, y: -30 });
+            gsap.set('#s9-line1', { opacity: 0, y: 50 });
+            gsap.set('#s9-line2', { opacity: 0, y: 70, scaleX: 0.9 });
+            gsap.set('#s9-same', { opacity: 0, scale: 0.85 });
+
+            // Show the overlay
+            overlay.style.display = 'flex';
+            overlay.style.opacity = 0;
+
+            // Update state BEFORE animating so keydown reads correctly
+            currentSlide = 999;
+            isAnimating = false;
+
+            // Fade overlay in, then animate content
+            gsap.to(overlay, {
+                opacity: 1, duration: 0.6, ease: 'power2.out',
+                onComplete: () => {
+                    gsap.to('#s9-label',  { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' });
+                    gsap.to('#s9-line1',  { opacity: 1, y: 0, duration: 0.6, ease: 'expo.out', delay: 0.1 });
+                    gsap.to('#s9-line2',  { opacity: 1, y: 0, scaleX: 1, duration: 0.9, ease: 'expo.out', delay: 0.25 });
+                    gsap.to('#s9-same',   { opacity: 1, scale: 1, duration: 0.7, ease: 'back.out(1.5)', delay: 0.6 });
+                }
+            });
+        }
+
+        function hideEndOverlay() {
+            const overlay = document.getElementById('slide-9-overlay');
+            gsap.to(overlay, { opacity: 0, duration: 0.4, ease: 'power2.in',
+                onComplete: () => { overlay.style.display = 'none'; }
+            });
+        }
+
+        // Timeline 7: Why Join Carousel
+        const tl7 = gsap.timeline({ paused: true });
+        
+        tl7.fromTo('#why-header', { opacity: 0, x: -50 }, { opacity: 1, x: 0, duration: 0.8, ease: 'power3.out' });
+        tl7.fromTo('#why-header-line', { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: 'expo.out' }, "-=0.4");
+        
+        const whySlides = document.querySelectorAll('.why-sub-slide');
+        tl7.fromTo(whySlides[0].querySelectorAll('.why-anim'), { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.8, stagger: 0.2, ease: 'power3.out' }, 0.4);
+        timelines.push(tl7);
+
+        // Timeline 8: What will you learn
+        const tl8 = gsap.timeline({ paused: true });
+        
+        // Header animation
+        tl8.to('.learn-header-anim', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' });
+        tl8.to('.learn-header-line', { scaleX: 1, duration: 0.8, ease: 'power3.inOut' }, "-=0.6");
+        
+        // Draw the architectural grid
+        tl8.to('.learn-h-line', { scaleX: 1, duration: 1.2, stagger: 0.2, ease: 'power3.inOut' }, "-=0.4");
+        tl8.to('.learn-v-line', { scaleY: 1, duration: 1.2, stagger: 0.1, ease: 'power3.inOut' }, "-=1.2");
+        
+        // Animate massive numbers sliding up
+        tl8.to('.learn-num', { opacity: 1, y: 0, duration: 0.8, stagger: 0.1, ease: 'back.out(1.5)' }, "-=0.8");
+        
+        // Fade and slide in text
+        tl8.to('.learn-text', { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: 'power2.out' }, "-=0.6");
+        
+        timelines.push(tl8);
+
+        // Timeline 10: Culture
+        
+        const tl9 = gsap.timeline({ paused: true });
+        tl9.to('.acad-header-anim', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' });
+        tl9.to('.acad-header-line', { scaleX: 1, duration: 0.8, ease: 'power3.inOut' }, "-=0.6");
+        tl9.to('.acad-card', { opacity: 1, y: 0, duration: 0.8, stagger: 0.15, ease: 'back.out(1.5)' }, "-=0.4");
+        tl9.to('.acad-more', { opacity: 1, x: -20, duration: 0.8, ease: 'power3.out' }, "-=0.2");
+        timelines.push(tl9);
+
+const tl10 = gsap.timeline({ paused: true });
+        
+        tl10.to('.fun-header-anim', { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" })
+            .to('#entry-logo-container', { opacity: 0, duration: 0.3 }, 0)
+            .to('.fun-header-line', { scaleX: 1, duration: 0.8, ease: "power3.inOut" }, "-=0.4")
+            .to('.fun-rows-anim', { opacity: 1, duration: 1, ease: "power2.inOut" }, "-=0.2");
+        
+        timelines.push(tl10);
+
+        const tl11 = gsap.timeline({ paused: true });
+        tl11.to('#finale-img', { scale: 1.05, duration: 8, ease: "sine.out" }, 0)
+            .to('#finale-text-1', { opacity: 1, y: 0, duration: 1, ease: "power3.out" }, 0.2)
+            .to('#finale-line', { scaleX: 1, duration: 0.8, ease: "power3.inOut" }, "-=0.4")
+            .to('#finale-text-2', { opacity: 1, y: 0, duration: 1, ease: "power3.out" }, "-=0.2");
+        timelines.push(tl11);
+
+
+        let pitchIndex = 0;     // State for horizontal slider
+        let whyIndex = 0;       // State for Why Join slider
+        let whyJoinIndex = -1;  // -1 = overlay only shown, 0-2 = word visible
+        let whoAreWeIndex = 0;  // 0 = Who are we?, 1 = Bookish Definition
+        let laneInterval;       // Global reference for the infinite driving loop
+
+        // Keyboard Navigation
+        
+        window.addEventListener('click', (e) => {
+            window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
+        });
+
+        window.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }));
+        });
+
+        window.addEventListener('keydown', (e) => {
+            // Handle Final Overlay navigation (currentSlide 999)
+            if (currentSlide === 999) {
+                if (e.key === 'ArrowLeft') {
+                    // Go back to Endless Fun
+                    currentSlide = 10;
+                    hideEndOverlay();
+                    const slide10 = document.getElementById('slide-10');
+                    gsap.set(slide10, { opacity: 1, visibility: 'visible', zIndex: 10 });
+                    slide10.classList.add('active-slide');
+                    return;
+                } else if (e.key === 'ArrowRight') {
+                    // Go forward to Finale (Slide 11)
+                    currentSlide = 10; // Pretend we are on 10 so transitionToSlide works
+                    hideEndOverlay();
+                    setTimeout(() => transitionToSlide(11), 450);
+                    return;
+                }
+            }
+            
+            // Handle Finale (Slide 11) navigation
+            if (currentSlide === 11) {
+                if (e.key === 'ArrowLeft') {
+                    if (isAnimating) return;
+                    showEndOverlay();
+                    return;
+                }
+            }
+
+            // Handle What will you learn Navigation (Slide 8)
+            if (currentSlide === 8) {
+                if (e.key === 'ArrowRight') {
+                    if (isAnimating) return;
+                    transitionToSlide(9); // Go to Academics
+                    return;
+                } else if (e.key === 'ArrowLeft') {
+                    if (isAnimating) return;
+                    transitionToSlide(7);
+                    return;
+                }
+            }
+            // Handle Academics Navigation (Slide 9)
+            if (currentSlide === 9) {
+                if (e.key === 'ArrowRight') {
+                    if (isAnimating) return;
+                    transitionToSlide(10); // Go to Endless Fun
+                    return;
+                } else if (e.key === 'ArrowLeft') {
+                    if (isAnimating) return;
+                    transitionToSlide(8);
+                    return;
+                }
+            }
+            // Handle Endless Fun Navigation (Slide 10)
+            if (currentSlide === 10) {
+                if (e.key === 'ArrowRight') {
+                    if (isAnimating) return;
+                    showEndOverlay(); // Go to the final 'Do you have it in you?' overlay
+                    return;
+                } else if (e.key === 'ArrowLeft') {
+                    if (isAnimating) return;
+                    transitionToSlide(9);
+                    return;
+                }
+            }
+
+
+            // Handle Why Join Slider Interception (Slide 7) — MUST be before isAnimating check
+            if (currentSlide === 7) {
+                if (e.key === 'ArrowRight') {
+                    if (whyIndex < 4) {
+                        if (isAnimating) return;
+                        goToWhy(whyIndex + 1);
+                        return;
+                    } else {
+                        // whyIndex === 4: show Slide 8 ("What will you learn")
+                        if (isAnimating) return;
+                        transitionToSlide(8);
+                        return;
+                    }
+                } else if (e.key === 'ArrowLeft') {
+                    if (whyIndex > 0) {
+                        if (isAnimating) return;
+                        goToWhy(whyIndex - 1);
+                        return;
+                    }
+                }
+            }
+
+            if (isAnimating) return;
+            
+            // Handle Slide 3 (Who Are We) Navigation
+            if (currentSlide === 3) {
+                if (e.key === 'ArrowRight') {
+                    if (whoAreWeIndex === 0) {
+                        playBookishDefinition();
+                        return;
+                    } else if (whoAreWeIndex === 1) {
+                        playStomp();
+                        return;
+                    }
+                    // if whoAreWeIndex === 2, fall through to transitionToSlide(4)
+                } else if (e.key === 'ArrowLeft') {
+                    if (whoAreWeIndex === 2) {
+                        // Revert stomp
+                        whoAreWeIndex = 1;
+                        gsap.killTweensOf('.stamp-letter');
+                        gsap.set('#boring-stamp', { opacity: 0, scale: 2, rotation: -12 });
+                        gsap.set('.stamp-letter', { x: 0, y: 0, rotation: 0, scale: 1 });
+                        return;
+                    } else if (whoAreWeIndex === 1) {
+                        // Reset back to Who Are We
+                        whoAreWeIndex = 0;
+                        gsap.killTweensOf(['#who-are-we-container', '#bookish-def-container', '#bookish-text', '#boring-stamp']);
+                        gsap.set('#who-are-we-container', { opacity: 1, scale: 1 });
+                        gsap.set('#bookish-def-container', { opacity: 0 });
+                        gsap.set('#boring-stamp', { opacity: 0, scale: 2, rotation: -12 });
+                        document.getElementById('bookish-text').innerHTML = '';
+                        return;
+                    }
+                }
+            }
+
+            // Handle Slide 2 (Why Join) Option Navigation
+            if (currentSlide === 2) {
+                if (e.key === 'ArrowRight') {
+                    if (whyJoinIndex === -1) {
+                        // First right arrow: blast in ACADEMICS
+                        goToWhyJoin(0);
+                        return;
+                    } else if (whyJoinIndex < 2) {
+                        goToWhyJoin(whyJoinIndex + 1);
+                        return;
+                    } else if (whyJoinIndex === 2) {
+                        // PLACEMENTS shown → cinematic drive transition begins
+                        driveTransition();
+                        return;
+                    } else if (whyJoinIndex === 3) {
+                        // Drive scene is running → approach the light!
+                        approachLight();
+                        return;
+                    }
+                } else if (e.key === 'ArrowLeft') {
+                    if (whyJoinIndex === 3) {
+                        // Exit the driving loop and restore the PLACEMENTS word
+                        if (isAnimating) return;
+                        isAnimating = true;
+                        if (typeof laneInterval !== 'undefined') clearInterval(laneInterval);
+                        
+                        gsap.to('#drive-overlay', { opacity: 0, duration: 0.5, onComplete: () => {
+                            gsap.set('#drive-overlay', { display: 'none', opacity: 1 });
+                            gsap.to(['#why-overlay-card', '#global-logo', '#placement-underline'], { opacity: 1, duration: 0.5 });
+                            gsap.to('.placements-shine', { scale: 1, opacity: 1, duration: 0.5 });
+                            const letters = document.querySelectorAll('.why-option:nth-child(3) .word-letter');
+                            gsap.to(letters, { x: 0, y: 0, rotation: 0, scale: 1, opacity: 1, duration: 0.5, stagger: 0.05 });
+                            whyJoinIndex = 2;
+                            isAnimating = false;
+                        }});
+                        return;
+                    } else if (whyJoinIndex > 0) {
+                        goToWhyJoin(whyJoinIndex - 1);
+                        return;
+                    } else if (whyJoinIndex === 0) {
+                        // Back to overlay-only state: scatter current word away
+                        goToWhyJoin(-1);
+                        return;
+                    }
+                    // whyJoinIndex === -1: fall through to previous slide
+                }
+            }
+            
+            // Handle Horizontal Pitch Slider Interception (now Slide 6)
+            if (currentSlide === 6) {
+                if (e.key === 'ArrowRight') {
+                    if (pitchIndex < 3) {
+                        goToPitch(pitchIndex + 1);
+                        return;
+                    }
+                } else if (e.key === 'ArrowLeft') {
+                    if (pitchIndex > 0) {
+                        goToPitch(pitchIndex - 1);
+                        return;
+                    }
+                }
+            }
+
+            // NOTE: Slide 7 interception is handled at the TOP of the keydown listener (before isAnimating guard)
+
+            if (e.key === 'ArrowRight' && currentSlide < slides.length - 1) {
+                if (currentSlide === 1) {
+                    crazyMorph1to2(); // The requested "crazy" continuous morph
+                } else {
+                    transitionToSlide(currentSlide + 1);
+                }
+            } else if (e.key === 'ArrowLeft' && currentSlide > 0) {
+                transitionToSlide(currentSlide - 1);
+            }
+        });
+
+        // ===== CRAZY MORPH TRANSITION: Slide 1 → 2 =====
+        function crazyMorph1to2() {
+            if (isAnimating) return;
+            isAnimating = true;
+
+            const slide1       = slides[1];
+            const slide2       = slides[2];
+            const elegantTexts = document.querySelectorAll('.elegant-text');
+            const elegantSub   = document.querySelector('.elegant-sub');
+            const elegantLine  = document.querySelector('.elegant-line');
+            const heroBg       = document.querySelector('.hero-bg');
+            const overlayCard  = document.getElementById('why-overlay-card');
+            const s2Grid       = slide2.querySelector('.absolute.inset-0.z-0');
+            const morphContainer = document.getElementById('crazy-morph-container');
+
+            // Set up initial state
+            gsap.set(slide2, { visibility: 'visible', opacity: 1, zIndex: 5 });
+            gsap.set(slide1, { zIndex: 10 });
+            gsap.set(overlayCard, { opacity: 0, scale: 0.8, filter: 'blur(10px)', y: 50 });
+            if (s2Grid) gsap.set(s2Grid, { opacity: 0, scale: 2 });
+            morphContainer.style.display = 'block';
+
+
+
+            const tl = gsap.timeline({
+                onComplete: () => {
+                    slide1.classList.remove('active-slide');
+                    slide2.classList.add('active-slide');
+                    gsap.set(slide1, { opacity: 0, visibility: 'hidden', zIndex: 1 });
+                    morphContainer.style.display = 'none';
+                    morphContainer.innerHTML = ''; // clear generated lines
+                    currentSlide = 2;
+                    isAnimating  = false;
+                    if (timelines[2]) timelines[2].play();
+                }
+            });
+
+            // 1. Text turns into horizontal lines and shoots off
+            if (elegantSub) {
+                tl.to(elegantSub, { scaleX: 10, scaleY: 0.1, opacity: 0, duration: 0.6, ease: "power4.in" }, 0);
+            }
+            if (elegantLine) {
+                tl.to(elegantLine, { scaleX: 20, opacity: 0, duration: 0.6, ease: "power4.in" }, 0);
+            }
+            
+            elegantTexts.forEach((text, i) => {
+                tl.to(text, {
+                    scaleX: 25,
+                    scaleY: 0,
+                    opacity: 0,
+                    letterSpacing: "50px",
+                    filter: 'blur(10px)',
+                    duration: 0.8,
+                    ease: "expo.in"
+                }, i * 0.1);
+            });
+
+            // 2. Building background morphs into the grid
+            // We'll stretch the building extremely wide to simulate lines
+            tl.to(heroBg, {
+                scaleX: 15,
+                scaleY: 0.05,
+                opacity: 0,
+                filter: 'contrast(3) blur(20px)',
+                duration: 1.2,
+                ease: "expo.inOut"
+            }, 0.2);
+
+            // 3. Grid comes in from the stretched lines
+            if (s2Grid) {
+                tl.to(s2Grid, {
+                    opacity: 0.4,
+                    scale: 1,
+                    duration: 1.2,
+                    ease: "expo.out"
+                }, 0.8);
+            }
+
+            // 4. The lines coalesce into the overlay card
+            tl.to(overlayCard, {
+                opacity: 1,
+                scale: 1,
+                filter: 'blur(0px)',
+                y: 0,
+                duration: 1.2,
+                ease: "elastic.out(1, 0.5)"
+            }, 1.0);
+            
+            // Fade out slide 1 background slightly delayed to ensure smooth transition
+            tl.to(slide1, { backgroundColor: 'transparent', duration: 0.5 }, 1.0);
+        }
+
+
+        // ===== CINEMATIC VECTOR DRIVE TRANSITION =====
+        // State for how close we are to the sun (0 = far, 4 = blown out white)
+        let lightApproachLevel = 0;
+        
+        function driveTransition() {
+            if (isAnimating) return;
+            isAnimating = true;
+            lightApproachLevel = 0;
+            
+            const driveFlash = document.getElementById('drive-flash');
+            const overlay = document.getElementById('drive-overlay');
+            const vectorScene = document.getElementById('drive-vector-scene');
+            const sun = document.getElementById('vec-sun');
+            const sunHalo = document.getElementById('vec-sun-halo');
+            const roadL = document.getElementById('vec-road-left');
+            const roadR = document.getElementById('vec-road-right');
+            const kerbL = document.getElementById('vec-kerb-left');
+            const kerbR = document.getElementById('vec-kerb-right');
+            const fieldL1 = document.getElementById('vec-field-l1');
+            const fieldL2 = document.getElementById('vec-field-l2');
+            const fieldR1 = document.getElementById('vec-field-r1');
+            const fieldR2 = document.getElementById('vec-field-r2');
+            const lanesGroup = document.getElementById('vec-lanes');
+            const placementLetters = document.querySelectorAll('.why-option')[2].querySelectorAll('.word-letter');
+            const placementsWrapper = document.querySelector('.placements-shine');
+            const whyCard = document.getElementById('why-overlay-card');
+            const logo = document.getElementById('global-logo');
+            const underline = document.getElementById('placement-underline');
+            const screenW = window.innerWidth, screenH = window.innerHeight;
+
+            const treeL = document.getElementById('vec-trees-left');
+            const treeR = document.getElementById('vec-trees-right');
+
+            // --- Reset state ---
+            gsap.set([sun, sunHalo, roadL, roadR, kerbL, kerbR, fieldL1, fieldL2, fieldR1, fieldR2, treeL, treeR], { opacity: 0 });
+            gsap.set(vectorScene, { scale: 1, rotation: 0, x: 0, y: 0, opacity: 0 });
+            gsap.set(sun, { attr: { r: 10 } });
+            gsap.set(sunHalo, { attr: { r: 80 } });
+            lanesGroup.innerHTML = '';
+            
+            gsap.set(overlay, { display: 'block', opacity: 1 });
+            gsap.set(driveFlash, { display: 'block', opacity: 0 });
+
+            const tl = gsap.timeline();
+
+            // Phase 1: Scatter letters and clear UI
+            tl.to([whyCard, logo, underline], { opacity: 0, duration: 0.4 }, 0);
+            tl.to(placementLetters, {
+                x: (i) => (Math.random() - 0.5) * screenW * 1.8,
+                y: (i) => (Math.random() - 0.5) * screenH * 1.4,
+                scale: 0,
+                rotation: () => (Math.random() - 0.5) * 720,
+                opacity: 0,
+                duration: 0.6,
+                stagger: { each: 0.03, from: 'random' },
+                ease: 'power3.in'
+            }, 0);
+            tl.to(placementsWrapper, { opacity: 0, duration: 0.2 }, 0.6);
+
+            // Phase 2: Fade in the scene
+            tl.to(vectorScene, { opacity: 1, duration: 0.8, ease: "power2.out" }, 0.6);
+
+            // Phase 3: Draw all lines from the vanishing point outward
+            tl.to([roadL, roadR], { opacity: 1, duration: 0.6, ease: "power2.out" }, 0.9);
+            tl.to([kerbL, kerbR], { opacity: 0.5, duration: 0.8, ease: "power2.out" }, 1.0);
+            tl.to([fieldL1, fieldL2, fieldR1, fieldR2], { opacity: 0.4, duration: 1.0, stagger: 0.1, ease: "power2.out" }, 1.1);
+            // Trees fade in with the scene
+            tl.to([treeL, treeR], { opacity: 1, duration: 1.2, ease: "power2.out" }, 1.0);
+
+            // Phase 4: Sun appears at vanishing point
+            tl.to(sunHalo, { opacity: 0.85, duration: 1.2, ease: "power2.out" }, 1.2);
+            tl.to(sun,     { opacity: 1,    duration: 0.8, ease: "power2.out" }, 1.4);
+
+            // Phase 5: Lane markers start streaming from the sun
+            tl.add(() => {
+                laneInterval = setInterval(() => {
+                    const lane = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                    lane.setAttribute("points", "957,542 963,542 963,542 957,542");
+                    lane.setAttribute("fill", "#7f1d1d");
+                    lane.setAttribute("opacity", "0.7");
+                    lanesGroup.appendChild(lane);
+                    gsap.to(lane, {
+                        attr: { points: "870,1080 1050,1080 1080,1140 840,1140" },
+                        duration: 0.65,
+                        ease: "power2.in",
+                        onComplete: () => lane.remove()
+                    });
+                }, 85);
+            }, 1.8);
+
+            // Phase 6: Gentle road sway
+            tl.to(vectorScene, { x: -50, rotation: -0.8, duration: 2.0, ease: "sine.inOut" }, 2.5);
+            tl.to(vectorScene, { x:  35, rotation:  0.6, duration: 2.0, ease: "sine.inOut" }, 4.5);
+            tl.to(vectorScene, { x:   0, rotation:  0,   duration: 2.0, ease: "sine.inOut" }, 6.5);
+
+            // Release keyboard after scene is set up — user presses Right to approach sun
+            setTimeout(() => {
+                whyJoinIndex = 3;
+                isAnimating = false;
+            }, 3000);
+        }
+
+        // Called each time the user presses Right Arrow during the drive scene
+        function approachLight() {
+            if (isAnimating) return;
+            isAnimating = true;
+            lightApproachLevel++;
+
+            const sun = document.getElementById('vec-sun');
+            const sunHalo = document.getElementById('vec-sun-halo');
+            const vectorScene = document.getElementById('drive-vector-scene');
+            const driveFlash = document.getElementById('drive-flash');
+
+            if (lightApproachLevel < 4) {
+                // Each press: zoom toward the sun
+                const scale  = 1 + lightApproachLevel * 0.4;
+                const haloR  = 80  + lightApproachLevel * 150;
+                const sunR   = 10  + lightApproachLevel * 18;
+
+                gsap.to(vectorScene, { scale: scale, duration: 0.9, ease: "power2.out" });
+                gsap.to(sun,     { attr: { r: sunR }, opacity: 1, duration: 0.6 });
+                gsap.to(sunHalo, { attr: { r: haloR }, opacity: 1, duration: 0.7 });
+
+                // Speed up lane markers as we approach
+                if (laneInterval) {
+                    clearInterval(laneInterval);
+                    const lanesGroup = document.getElementById('vec-lanes');
+                    const speed = Math.max(28, 85 - lightApproachLevel * 18);
+                    const dur   = Math.max(0.22, 0.65 - lightApproachLevel * 0.1);
+                    laneInterval = setInterval(() => {
+                        const lane = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                        lane.setAttribute("points", "957,542 963,542 963,542 957,542");
+                        lane.setAttribute("fill", "#7f1d1d");
+                        lane.setAttribute("opacity", "0.7");
+                        lanesGroup.appendChild(lane);
+                        gsap.to(lane, {
+                            attr: { points: "870,1080 1050,1080 1080,1140 840,1140" },
+                            duration: dur,
+                            ease: "power3.in",
+                            onComplete: () => lane.remove()
+                        });
+                    }, speed);
+                }
+
+                setTimeout(() => { isAnimating = false; }, 500);
+
+            } else {
+                // Final press — sun explodes to white, Who are we? appears
+                clearInterval(laneInterval);
+
+                gsap.to(sun,     { attr: { r: 900 }, opacity: 1, duration: 0.5, ease: "power3.in" });
+                gsap.to(sunHalo, { attr: { r: 1400 }, opacity: 1, duration: 0.5 });
+                gsap.to(vectorScene, { scale: 3.5, duration: 0.6, ease: "power3.in" });
+
+                gsap.set(driveFlash, { display: 'block', opacity: 0 });
+                gsap.to(driveFlash, {
+                    opacity: 1,
+                    duration: 0.45,
+                    delay: 0.3,
+                    ease: "power2.in",
+                    onComplete: () => {
+                        // Hide overlay, transition to Slide 3
+                        gsap.set(document.getElementById('drive-overlay'), { display: 'none' });
+                        lightApproachLevel = 0;
+                        whyJoinIndex = -1;
+                        whoAreWeIndex = 0; // Reset Slide 3 inner state
+                        
+                        // Reset Slide 3 specific containers to default state
+                        gsap.set('#who-are-we-container', { opacity: 1, scale: 1 });
+                        gsap.set('#bookish-def-container', { opacity: 0 });
+                        gsap.set('#boring-stamp', { opacity: 0, scale: 2, rotation: -12 });
+                        document.getElementById('bookish-text').innerHTML = '';
+
+                        const current = slides[2];
+                        const next    = slides[3];
+                        current.classList.remove('active-slide');
+                        next.classList.add('active-slide');
+                        gsap.set(current, { opacity: 0, visibility: 'hidden' });
+                        gsap.set(next, { opacity: 1, visibility: 'visible', zIndex: 20 });
+
+                        gsap.to(driveFlash, {
+                            opacity: 0,
+                            duration: 1.0,
+                            ease: "power2.out",
+                            onComplete: () => {
+                                gsap.set(driveFlash, { display: 'none' });
+                                gsap.set('.placements-shine', { scale: 1, opacity: 1 });
+                                gsap.set('.why-option:nth-child(3) .word-letter', { x: 0, y: 0, rotation: 0, scale: 1, opacity: 1 });
+                                gsap.set(document.querySelectorAll('.why-option')[2], { opacity: 0 });
+                                gsap.set('#placement-underline', { width: 0, opacity: 1 });
+                                gsap.set('#why-overlay-card', { opacity: 1 });
+                                gsap.set('#global-logo', { opacity: 1 });
+                                currentSlide = 3;
+                                isAnimating = false;
+                            }
+                        });
+                    }
+                });
+            }
+        }
+
+        // Animated typewriter for the bookish definition on Slide 3
+        function playBookishDefinition() {
+            if (isAnimating) return;
+            isAnimating = true;
+            whoAreWeIndex = 1;
+
+            const whoAreWeContainer = document.getElementById('who-are-we-container');
+            const bookishContainer = document.getElementById('bookish-def-container');
+            const bookishText = document.getElementById('bookish-text');
+
+            const tl = gsap.timeline();
+
+            // 1. Zoom and fade out "Who are we?"
+            tl.to(whoAreWeContainer, {
+                opacity: 0,
+                scale: 1.1,
+                duration: 0.6,
+                ease: "power2.in"
+            });
+
+            // 2. Fade in the bookish container
+            tl.to(bookishContainer, {
+                opacity: 1,
+                duration: 0.4,
+                ease: "power2.out"
+            });
+
+            // 3. Typewriter effect
+            tl.to(bookishText, {
+                text: {
+                    value: "The Placement Committee is an officially designated student body responsible for facilitating the recruitment process, managing corporate relations, and organizing placement drives",
+                    delimiter: ""
+                },
+                duration: 5.5, // slower typing
+                ease: "none",
+                onComplete: () => {
+                    isAnimating = false;
+                }
+            });
+        }
+
+        function playStomp() {
+            if (isAnimating) return;
+            isAnimating = true;
+            whoAreWeIndex = 2;
+
+            const boringStamp = document.getElementById('boring-stamp');
+            const bookishContainer = document.getElementById('bookish-def-container');
+            const stampLetters = document.querySelectorAll('.stamp-letter');
+
+            const tl = gsap.timeline();
+
+            // Kill active typing if they skipped early
+            gsap.killTweensOf('#bookish-text');
+
+            // 1. THE STOMP
+            tl.to(boringStamp, {
+                opacity: 1,
+                scale: 1,
+                rotation: -12, 
+                duration: 0.65, // slower and cleaner
+                ease: "back.out(1.2)", // less extreme bounce
+                onComplete: () => {
+                    // Shatter the "BORING" letters a bit more deliberately
+                    gsap.to(stampLetters, {
+                        x: (i) => (Math.random() - 0.5) * 35, // smaller scatter
+                        y: (i) => (Math.random() - 0.5) * 35,
+                        rotation: (i) => (Math.random() - 0.5) * 25, // less chaotic
+                        scale: () => 0.95 + Math.random() * 0.15, 
+                        duration: 0.6,
+                        ease: "power2.out",
+                        stagger: 0.05
+                    });
+                    
+                    // Slower screen shake effect
+                    gsap.fromTo(bookishContainer, 
+                        { x: -6, y: -2 }, 
+                        { x: 6, y: 2, duration: 0.07, yoyo: true, repeat: 4, ease: "sine.inOut", clearProps: "x,y", onComplete: () => isAnimating = false }
+                    );
+                }
+            });
+        }
+
+        function goToWhyJoin(index) {
+            isAnimating = true;
+
+
+            const options = document.querySelectorAll('.why-option');
+            const underline = document.getElementById('placement-underline');
+            const screenW = window.innerWidth;
+            const screenH = window.innerHeight;
+
+            // --- If going back to overlay-only (-1): scatter current word ---
+            if (index === -1) {
+                const currentLetters = options[whyJoinIndex].querySelectorAll('.word-letter');
+                gsap.to(currentLetters, {
+                    x: () => (Math.random() - 0.5) * screenW * 1.4,
+                    y: () => Math.random() * screenH * 0.7 + 100,
+                    rotation: () => (Math.random() - 0.5) * 720,
+                    scale: () => Math.random() * 0.4 + 0.05,
+                    opacity: 0,
+                    duration: 0.8,
+                    stagger: { each: 0.04, from: 'random' },
+                    ease: 'power3.in',
+                    onComplete: () => {
+                        gsap.set(options[whyJoinIndex], { opacity: 0 });
+                        gsap.set(currentLetters, { x: 0, y: 0, rotation: 0, scale: 1, opacity: 1 });
+                        gsap.to('#slide-2', { backgroundColor: '#fdfdfd', duration: 0.5 });
+                        gsap.set(underline, { width: 0 });
+                        whyJoinIndex = -1;
+                        isAnimating = false;
+                    }
+                });
+                return;
+            }
+
+            const nextLetters = options[index].querySelectorAll('.word-letter');
+
+            // --- Blast / scatter current word (if one is showing) ---
+            if (whyJoinIndex >= 0) {
+                const currentLetters = options[whyJoinIndex].querySelectorAll('.word-letter');
+                gsap.to(currentLetters, {
+                    x: () => (Math.random() - 0.5) * screenW * 1.4,
+                    y: () => Math.random() * screenH * 0.7 + 100,
+                    rotation: () => (Math.random() - 0.5) * 720,
+                    scale: () => Math.random() * 0.4 + 0.05,
+                    opacity: 0,
+                    duration: 0.8,
+                    stagger: { each: 0.04, from: 'random' },
+                    ease: 'power3.in',
+                    onComplete: () => {
+                        gsap.set(options[whyJoinIndex], { opacity: 0 });
+                        gsap.set(currentLetters, { x: 0, y: 0, rotation: 0, scale: 1, opacity: 1 });
+                    }
+                });
+            }
+
+            // --- Rise in the next word ---
+            gsap.set(options[index], { opacity: 1 });
+            gsap.set(nextLetters, { y: 160, opacity: 0, rotationX: -90, x: 0, rotation: 0, scale: 1 });
+
+            gsap.to('#slide-2', { backgroundColor: index === 2 ? '#fdf2f2' : '#fdfdfd', duration: 0.8, delay: whyJoinIndex >= 0 ? 0.4 : 0 });
+
+            gsap.to(nextLetters, {
+                y: 0, opacity: 1, rotationX: 0,
+                duration: 0.7, stagger: 0.05, ease: 'power3.out',
+                delay: whyJoinIndex >= 0 ? 0.5 : 0,
+                onComplete: () => {
+                    if (index === 2) {
+                        gsap.to(underline, { width: '60%', duration: 0.8, ease: 'power2.out' });
+                    } else {
+                        gsap.set(underline, { width: 0 });
+                    }
+                    whyJoinIndex = index;
+                    isAnimating = false;
+                }
+            });
+        }
+
+        function goToPitch(index) {
+            isAnimating = true;
+            
+            const texts = document.querySelectorAll('.role-text-card');
+            const paths = document.querySelectorAll('.role-path');
+
+            // Shimmer on header
+            gsap.fromTo('#roles-header-glow', 
+                { opacity: 0.8, scale: 1 }, 
+                { opacity: 0, scale: 1.05, duration: 1, ease: 'power2.out' }
+            );
+
+            // Hide current text
+            if(texts[pitchIndex]) {
+                gsap.to(texts[pitchIndex], { opacity: 0, y: -20, duration: 0.4, ease: 'power2.in', onComplete: () => {
+                    gsap.set(texts[pitchIndex], { pointerEvents: 'none' });
+                }});
+            }
+            
+            // "Undraw" current SVG
+            const currentPath = paths[pitchIndex];
+            if (currentPath) {
+                const currentLen = currentPath.getTotalLength();
+                gsap.to(currentPath, { 
+                    strokeDashoffset: currentLen, 
+                    duration: 0.6, 
+                    ease: 'power2.inOut',
+                    onComplete: () => {
+                        gsap.set(currentPath, { opacity: 0 });
+                    }
+                });
+            }
+
+            // "Draw" next SVG and move background
+            const nextPath = paths[index];
+            if (nextPath) {
+                const nextLen = nextPath.getTotalLength();
+                gsap.set(nextPath, { opacity: 1, strokeDasharray: nextLen, strokeDashoffset: nextLen });
+                
+                // Move background elements for parallax
+                gsap.to('#bg-circle-1', { rotation: index * 45, x: index * -20, duration: 1.5, ease: 'power2.out' });
+                gsap.to('#bg-circle-2', { rotation: index * -45, y: index * -20, duration: 1.5, ease: 'power2.out' });
+                
+                // Update index and wait for undraw to finish
+                setTimeout(() => {
+                    pitchIndex = index;
+                    
+                    // Show new text
+                    if(texts[index]) {
+                        gsap.set(texts[index], { y: 20, pointerEvents: 'auto' });
+                        gsap.to(texts[index], { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' });
+                    }
+                    
+                    // Draw new SVG
+                    gsap.to(nextPath, { strokeDashoffset: 0, duration: 1.2, ease: 'power2.out' });
+                    
+                    isAnimating = false;
+                }, 600);
+            } else {
+                pitchIndex = index;
+                isAnimating = false;
+            }
+        }
+
+        function transitionToSlide(targetIndex) {
+            isAnimating = true;
+            
+
+            
+            const current = slides[currentSlide];
+            const next = slides[targetIndex];
+            const direction = targetIndex > currentSlide ? 1 : -1;
+
+            // Cinematic Transition: Clean opacity + scale fade (GPU-safe, no clipping)
+            gsap.set(next, { visibility: 'visible', zIndex: 20, opacity: 0, scale: direction > 0 ? 1.08 : 0.95 });
+            gsap.set(current, { zIndex: 10 });
+
+            // Pre-transition cleanup for returning to previous slides with custom states
+            if (direction < 0) {
+                if (targetIndex === 0) {
+                    gsap.set(next, { backgroundColor: 'rgba(255,255,255,1)' });
+                } else if (targetIndex === 1) {
+                    gsap.set('.elegant-text, .elegant-sub, .elegant-line', { clearProps: 'all' });
+                    // Only clear GSAP transforms/filters, keep the inline background URL, and restore original opacities
+                    gsap.set('.hero-bg, .hero-overlay', { clearProps: 'scale,filter' });
+                    gsap.set('.hero-bg', { opacity: 0.35 });
+                    gsap.set('.hero-overlay', { opacity: 1 });
+                }
+            }
+            // Reset Slide 2 overlay card + grid when going back FROM Slide 2
+            if (currentSlide === 2 && direction < 0) {
+                gsap.set('#why-overlay-card', { opacity: 0, y: -30 });
+                const s2grid = slides[2] ? slides[2].querySelector('.absolute.inset-0.z-0') : null;
+                if (s2grid) gsap.set(s2grid, { opacity: 0.4 });
+            }
+
+            const transTl = gsap.timeline({
+                onComplete: () => {
+                    current.classList.remove('active-slide');
+                    next.classList.add('active-slide');
+                    gsap.set(current, { opacity: 0, visibility: 'hidden', scale: 1 });
+                    gsap.set(next, { scale: 1 });
+                    
+                    // If we just left Slide 2 (the vector scene), clean it up!
+                    if (currentSlide === 2) {
+                        if (typeof laneInterval !== 'undefined') clearInterval(laneInterval);
+                        gsap.set('#drive-overlay', { display: 'none' });
+                        // Reset Slide 2 UI elements for future reverse navigation
+                        gsap.set('.placements-shine', { scale: 1, opacity: 1 });
+                        gsap.set('.why-option:nth-child(3) .word-letter', { x: 0, y: 0, rotation: 0, scale: 1, opacity: 1 });
+                        gsap.set('.why-option:nth-child(3)', { opacity: 0 });
+                        gsap.set('#placement-underline', { width: 0, opacity: 1 });
+                        gsap.set('#why-overlay-card', { opacity: 1 });
+                        gsap.set('#global-logo', { opacity: 1 });
+                        whyJoinIndex = -1;
+                    }
+                    
+                    if (currentSlide === 7) {
+                        if (direction < 0) {
+                            whyIndex = 4;
+                            const whySubSlides = document.querySelectorAll('.why-sub-slide');
+                            gsap.set(whySubSlides, { zIndex: 1, clipPath: 'circle(0% at 50% 50%)' });
+                            gsap.set(whySubSlides[4], { zIndex: 5, clipPath: 'circle(150% at 50% 50%)' });
+                            gsap.set(whySubSlides[4].querySelectorAll('.why-anim'), { opacity: 1, y: 0 });
+                        } else {
+                            // Reset Why Join Slider
+                            whyIndex = 0;
+                            const whySubSlides = document.querySelectorAll('.why-sub-slide');
+                            gsap.set(whySubSlides, { zIndex: 1, clipPath: 'circle(0% at 50% 50%)' });
+                            gsap.set(whySubSlides[0], { zIndex: 5, clipPath: 'circle(150% at 50% 50%)' });
+                            gsap.set('.why-anim', { opacity: 0, y: 50 });
+                        }
+                    }
+
+                    
+                    currentSlide = targetIndex;
+                    isAnimating = false;
+                }
+            });
+
+            // Transition: current fades/shrinks out, next fades/grows in
+            transTl
+                .to(current, { opacity: 0, scale: direction > 0 ? 0.93 : 1.07, duration: 0.7, ease: "power2.inOut" }, 0)
+                .to(next, { opacity: 1, scale: 1, duration: 0.7, ease: "power2.inOut" }, 0);
+
+            // Specific Transition from Slide 0 to Slide 1 (Bubble pop & Logo slide)
+            if (currentSlide === 0 && targetIndex === 1 && direction > 0) {
+                transTl.to('#entry-hint', { opacity: 0, duration: 0.5 }, 0)
+                       .to('#entry-text', { filter: 'blur(20px)', scale: 1.5, opacity: 0, duration: 0.8, ease: "power2.in" }, 0)
+                       .to('#entry-logo-container', { x: '45vw', y: '-40vh', scale: 0.22, duration: 1.4, ease: "expo.inOut" }, 0);
+                
+                // Do not fade out Slide 0 entirely so the logo persists in the DOM, 
+                // but fade out the background white to show Slide 1 underneath.
+                transTl.to(current, { backgroundColor: 'rgba(255,255,255,0)', duration: 1.4, ease: "expo.inOut" }, 0);
+            }
+            // Specific Reverse Transition from Slide 1 back to Slide 0
+            else if (targetIndex === 0 && direction < 0) {
+                transTl.to('#entry-logo-container', { x: 0,
+                    y: 0,
+                    scale: 1, duration: 1.4, ease: "expo.inOut" }, 0)
+                       .to('#entry-text', { filter: 'blur(0px)', scale: 1, opacity: 1, duration: 1.4, ease: "expo.inOut" }, 0)
+                       .to('#entry-hint', { opacity: 1, duration: 1.4, ease: "expo.inOut" }, 0);
+                
+                transTl.to(current, { scale: 0.6, filter: "blur(15px)", opacity: 0, duration: 1.4, ease: "expo.inOut" }, 0);
+            }
+            
+            // === Slide 3 → 4: Logo Centers ===
+            else if (currentSlide === 3 && targetIndex === 4 && direction > 0) {
+                transTl.to('#entry-logo-container', {
+                    x: 0,
+                    y: 0,
+                    scale: 1,
+                    duration: 1.2,
+                    ease: "power3.inOut"
+                }, 0);
+            }
+            // === Slide 4 → 3: Global Logo Returns ===
+            else if (targetIndex === 3 && direction < 0) {
+                transTl.to('#entry-logo-container', {
+                    x: '45vw',
+                    y: '-40vh',
+                    scale: 0.22,
+                    duration: 1.2,
+                    ease: "expo.inOut"
+                }, 0);
+            }
+            
+            // === Slide 4 → 5: Global Logo Returns ===
+            else if (currentSlide === 4 && targetIndex === 5 && direction > 0) {
+                transTl.to('#entry-logo-container', {
+                    x: '45vw',
+                    y: '-40vh',
+                    scale: 0.22,
+                    duration: 1.2,
+                    ease: "expo.inOut"
+                }, 0);
+            }
+            // === Slide 5 → 4: Logo Centers ===
+            else if (targetIndex === 4 && direction < 0) {
+                transTl.to('#entry-logo-container', {
+                    x: 0,
+                    y: 0,
+                    scale: 1,
+                    duration: 1.2,
+                    ease: "power3.inOut"
+                }, 0);
+            }
+
+            // === Slide 1 → 2: handled by seamlessTransition1to2() via keyboard ===
+            else if (currentSlide === 1 && targetIndex === 2 && direction > 0) {
+                // Fallback: simple fade (seamless scan called directly from keyboard)
+                transTl.to('.hero-bg, .hero-overlay', { opacity: 0, duration: 1.0 }, 0);
+                transTl.to('.elegant-text', { opacity: 0, y: -30, duration: 0.7, stagger: 0.1 }, 0);
+            }
+            // === Slide 1 → 2: handled by seamlessTransition1to2() via keyboard ===
+            else if (currentSlide === 1 && targetIndex === 2 && direction > 0) {
+                // Fallback: simple fade
+                transTl.to('.hero-bg, .hero-overlay', { opacity: 0, duration: 1.0 }, 0);
+                transTl.to('.elegant-text', { opacity: 0, y: -30, duration: 0.7, stagger: 0.1 }, 0);
+            } else {
+                // Default transition: Current slide falls backwards aggressively and fades out
+                transTl.to(current,
+                    { scale: 0.6, filter: "blur(15px)", opacity: 0, duration: 1.4, ease: "expo.inOut" },
+                    0
+                );
+            }
+
+            // Ignite the target slide's internal timeline while the transition is still finishing
+            if (timelines[targetIndex]) {
+                transTl.add(() => timelines[targetIndex].restart(true, false), "-=0.6");
+            }
+        }
+        
+
+    
+    </script>
+</body>
+</html>
