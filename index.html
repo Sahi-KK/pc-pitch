@@ -1259,8 +1259,29 @@
             </div>
         </section>
 
-        <!-- Slide 11: Finale -->
-        <section class="slide flex flex-col bg-gradient-to-b from-[#4a0404] to-black overflow-hidden relative justify-center items-center py-8" id="slide-11">
+        
+        <!-- Slide 11: Senior Placement Committee -->
+        <section class="slide flex flex-col bg-gradient-to-b from-black via-[#3a0404] to-black overflow-hidden relative justify-center items-center py-8" id="slide-11">
+            <div class="flex-grow flex flex-col items-center justify-center w-full max-w-7xl px-4 md:px-8 z-10 h-full space-y-8">
+                
+                <div class="w-full text-center">
+                    <h1 class="font-heading text-4xl md:text-5xl lg:text-6xl font-black text-white uppercase tracking-widest drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]" id="spc-text-1" style="opacity: 0; transform: translateY(-20px);">
+                        Senior Placement Committee <span class="text-yellow-400">2026-27</span>
+                    </h1>
+                    <div class="h-1 w-32 mx-auto mt-4 rounded-full bg-yellow-400 shadow-[0_0_15px_rgba(250,204,21,0.8)]" id="spc-line" style="transform: scaleX(0);"></div>
+                </div>
+
+                <div class="relative flex justify-center items-center rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] border border-white/20 bg-white/10 p-2 backdrop-blur-md w-full max-w-5xl mx-auto" id="spc-img-container" style="opacity: 0; transform: scale(0.95);">
+                    <div class="overflow-hidden rounded-xl w-full flex justify-center bg-black">
+                        <img src="SPC%2016.png" alt="Senior Placement Committee 2026-27" class="max-h-[60vh] max-w-full object-contain" />
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Slide 12: Finale -->
+        <section class="slide flex flex-col bg-gradient-to-b from-[#4a0404] to-black overflow-hidden relative justify-center items-center py-8" id="slide-12">
             <div class="flex-grow flex flex-col items-center justify-center w-full max-w-7xl px-4 md:px-8 z-10 h-full">
                 
                 <!-- Text Container Above Image -->
@@ -1603,12 +1624,19 @@ const tl10 = gsap.timeline({ paused: true });
         
         timelines.push(tl10);
 
+        
         const tl11 = gsap.timeline({ paused: true });
-        tl11.to('#finale-img', { scale: 1.05, duration: 8, ease: "sine.out" }, 0)
+        tl11.to('#spc-text-1', { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 0.2)
+            .to('#spc-line', { scaleX: 1, duration: 0.8, ease: "power3.inOut" }, "-=0.4")
+            .to('#spc-img-container', { opacity: 1, scale: 1, duration: 1, ease: "back.out(1.2)" }, "-=0.2");
+        timelines.push(tl11);
+
+        const tl12 = gsap.timeline({ paused: true });
+        tl12.to('#finale-img', { scale: 1.05, duration: 8, ease: "sine.out" }, 0)
             .to('#finale-text-1', { opacity: 1, y: 0, duration: 1, ease: "power3.out" }, 0.2)
             .to('#finale-line', { scaleX: 1, duration: 0.8, ease: "power3.inOut" }, "-=0.4")
             .to('#finale-text-2', { opacity: 1, y: 0, duration: 1, ease: "power3.out" }, "-=0.2");
-        timelines.push(tl11);
+        timelines.push(tl12);
 
 
         let pitchIndex = 0;     // State for horizontal slider
@@ -1632,24 +1660,37 @@ const tl10 = gsap.timeline({ paused: true });
             // Handle Final Overlay navigation (currentSlide 999)
             if (currentSlide === 999) {
                 if (e.key === 'ArrowLeft') {
-                    // Go back to Endless Fun
-                    currentSlide = 10;
+                    // Go back to SPC slide
+                    currentSlide = 11;
                     hideEndOverlay();
-                    const slide10 = document.getElementById('slide-10');
-                    gsap.set(slide10, { opacity: 1, visibility: 'visible', zIndex: 10 });
-                    slide10.classList.add('active-slide');
+                    const slide11 = document.getElementById('slide-11');
+                    gsap.set(slide11, { opacity: 1, visibility: 'visible', zIndex: 10 });
+                    slide11.classList.add('active-slide');
                     return;
                 } else if (e.key === 'ArrowRight') {
-                    // Go forward to Finale (Slide 11)
-                    currentSlide = 10; // Pretend we are on 10 so transitionToSlide works
+                    // Go forward to Finale (Slide 12)
+                    currentSlide = 11; // Pretend we are on 11 so transitionToSlide works
                     hideEndOverlay();
-                    setTimeout(() => transitionToSlide(11), 450);
+                    setTimeout(() => transitionToSlide(12), 450);
                     return;
                 }
             }
             
-            // Handle Finale (Slide 11) navigation
+            // Handle SPC Navigation (Slide 11)
             if (currentSlide === 11) {
+                if (e.key === 'ArrowRight') {
+                    if (isAnimating) return;
+                    showEndOverlay(); // Go to the final 'Do you have it in you?' overlay
+                    return;
+                } else if (e.key === 'ArrowLeft') {
+                    if (isAnimating) return;
+                    transitionToSlide(10);
+                    return;
+                }
+            }
+
+            // Handle Finale (Slide 12) navigation
+            if (currentSlide === 12) {
                 if (e.key === 'ArrowLeft') {
                     if (isAnimating) return;
                     showEndOverlay();
@@ -1685,7 +1726,7 @@ const tl10 = gsap.timeline({ paused: true });
             if (currentSlide === 10) {
                 if (e.key === 'ArrowRight') {
                     if (isAnimating) return;
-                    showEndOverlay(); // Go to the final 'Do you have it in you?' overlay
+                    transitionToSlide(11); // Go to SPC
                     return;
                 } else if (e.key === 'ArrowLeft') {
                     if (isAnimating) return;
