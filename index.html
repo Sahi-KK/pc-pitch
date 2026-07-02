@@ -1260,21 +1260,19 @@
         </section>
 
         
-        <!-- Slide 11: Senior Placement Committee -->
+        <!-- Slide 11: SPC -->
         <section class="slide flex flex-col bg-white overflow-hidden relative justify-center items-center py-8" id="slide-11">
-            <div class="flex-grow flex flex-col items-center justify-center w-full max-w-7xl px-4 md:px-8 z-10 h-full space-y-8">
+            <div class="flex-grow flex flex-col items-center justify-center w-full max-w-7xl px-4 md:px-8 z-10 h-full">
                 
-                <div class="w-full text-center">
-                    <h1 class="font-heading text-4xl md:text-5xl lg:text-6xl font-black text-[#3a0404] uppercase tracking-widest" id="spc-text-1" style="opacity: 0; transform: translateY(-20px);">
-                        Senior Placement Committee <span class="text-black">2026-27</span>
+                <div class="w-full flex flex-col items-center text-center mb-4">
+                    <h1 class="font-heading text-3xl md:text-5xl lg:text-7xl font-black text-[#111827] uppercase tracking-widest leading-tight" id="spc-text-1" style="opacity: 0; transform: translateY(20px);">
+                        Senior Placement Committee
                     </h1>
-                    <div class="h-1 w-32 mx-auto mt-4 rounded-full bg-[#3a0404]" id="spc-line" style="transform: scaleX(0);"></div>
+                    <div class="h-1 w-24 mt-4 bg-red-800" id="spc-line" style="transform: scaleX(0);"></div>
                 </div>
 
-                <div class="relative flex justify-center items-center w-full max-w-5xl mx-auto" id="spc-img-container" style="opacity: 0; transform: scale(0.95);">
-                    <div class="overflow-hidden w-full flex justify-center">
-                        <img src="SPC16%20Photo.png" alt="Senior Placement Committee 2026-27" class="max-h-[60vh] max-w-full object-contain drop-shadow-xl" />
-                    </div>
+                <div class="relative flex justify-center items-center w-full mt-2" id="spc-img-container" style="opacity: 0; transform: scale(0.95);">
+                    <img src="SPC16 Photo.png" alt="Senior Placement Committee 2026-27" class="max-h-[85vh] max-w-[95%] object-contain" />
                 </div>
 
             </div>
@@ -1542,6 +1540,8 @@
 
         // ─── Dedicated direct navigation to Final Overlay ──
         function showEndOverlay() {
+            if (isAnimating) return;
+            isAnimating = true;
             const overlay = document.getElementById('slide-9-overlay');
 
             // Reset overlay content
@@ -1556,7 +1556,6 @@
 
             // Update state BEFORE animating so keydown reads correctly
             currentSlide = 999;
-            isAnimating = false;
 
             // Fade overlay in, then animate content
             gsap.to(overlay, {
@@ -1565,15 +1564,20 @@
                     gsap.to('#s9-label',  { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' });
                     gsap.to('#s9-line1',  { opacity: 1, y: 0, duration: 0.6, ease: 'expo.out', delay: 0.1 });
                     gsap.to('#s9-line2',  { opacity: 1, y: 0, scaleX: 1, duration: 0.9, ease: 'expo.out', delay: 0.25 });
-                    gsap.to('#s9-same',   { opacity: 1, scale: 1, duration: 0.7, ease: 'back.out(1.5)', delay: 0.6 });
+                    gsap.to('#s9-same',   { opacity: 1, scale: 1, duration: 0.7, ease: 'back.out(1.5)', delay: 0.6, onComplete: () => { isAnimating = false; } });
                 }
             });
         }
 
         function hideEndOverlay() {
+            if (isAnimating) return;
+            isAnimating = true;
             const overlay = document.getElementById('slide-9-overlay');
             gsap.to(overlay, { opacity: 0, duration: 0.4, ease: 'power2.in',
-                onComplete: () => { overlay.style.display = 'none'; }
+                onComplete: () => { 
+                    overlay.style.display = 'none';
+                    isAnimating = false;
+                }
             });
         }
 
